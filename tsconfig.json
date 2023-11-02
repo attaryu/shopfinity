@@ -22,7 +22,10 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"]
+      "react-dom": ["./node_modules/preact/compat/"],
+      "@/components/*": ["./src/components/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/stores/*": ["./src/stores/*"]
     }
   },
   "include": ["src"],
