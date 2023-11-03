@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="flex justify-between items-start p-14">
         <div>
           <div className="flex gap-9 items-center">
-            <img src="/logo.svg" alt="" className="w-[4.6rem]"/>
+            <img src="/logo/shopfinity.svg" alt="" className="w-[4.6rem]"/>
 
             <div>
               <p className="text-2xl font-bold">Shopfinity</p>
