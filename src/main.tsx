@@ -10,10 +10,12 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <Routes>
-        <Route path='/' element={<div>Home</div>} />
-        <Route path='/my-cart' element={<div>My cart</div>} />
-      </Routes>
+      <div className="pt-20">
+        <Routes>
+          <Route path='/' element={<div>Home</div>} />
+          <Route path='/my-cart' element={<div>My cart</div>} />
+        </Routes>
+      </div>
       <Footer />
     </BrowserRouter>
   );
