@@ -2,7 +2,7 @@ import Link from '@/components/Link';
 
 export default function Navbar() {
   return (
-    <nav className="bg-zinc-900 text-white w-full px-5 py-3.5 flex items-center fixed top-0 left-0">
+    <nav className="bg-zinc-900 text-white w-full px-5 py-3.5 flex items-center fixed top-0 left-0 z-10">
       <div className="flex gap-5">
         <img src="/logo/shopfinity.svg" alt="" className="w-8  " />
         <p className="text-xl font-bold">Shopfinity</p>
