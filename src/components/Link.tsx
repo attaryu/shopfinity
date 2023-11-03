@@ -1,11 +1,13 @@
 import { Link as LinkReactRouter, useLocation } from 'react-router-dom';
 
-type Props = {
+import type { ComponentChildren } from 'preact';
+
+type Props = Readonly<{
   to: string,
   type?: 'normal' | 'navbar' | 'button primary' | 'button secondary',
-  children: string,
   size?: 'sm' | 'normal',
-};
+  children: string | ComponentChildren,
+}>;
 
 export default function Link({ to, type = 'normal', size = 'normal', children }: Props) {  
   if (type === 'navbar') {
@@ -39,7 +41,7 @@ export default function Link({ to, type = 'normal', size = 'normal', children }:
   return (
     <LinkReactRouter
       to={to}
-      className="text-blue-500 font-medium underline underline-offset-3"
+      className="text-blue-500 font-medium underline-offset-3"
     >
       {children}
     </LinkReactRouter>
