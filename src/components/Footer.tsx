@@ -6,11 +6,11 @@ export default function Footer() {
       <div className="flex justify-between items-start p-14">
         <div>
           <div className="flex gap-9 items-center">
-            <img src="/logo.svg" alt="" className="w-20"/>
+            <img src="/logo.svg" alt="" className="w-[4.6rem]"/>
 
             <div>
-              <p className="text-3xl font-bold">Shopfinity</p>
-              <small className="text-lg font-extralight">Everthing your needs.</small>
+              <p className="text-2xl font-bold">Shopfinity</p>
+              <small className="text-base font-extralight">Everthing your needs.</small>
             </div>
           </div>
 
