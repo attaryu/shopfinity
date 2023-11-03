@@ -41,7 +41,7 @@ export default function Link({ to, type = 'normal', size = 'normal', children }:
   return (
     <LinkReactRouter
       to={to}
-      className="text-blue-500 font-medium underline-offset-3"
+      className="text-inherit font-medium underline-offset-3"
     >
       {children}
     </LinkReactRouter>
