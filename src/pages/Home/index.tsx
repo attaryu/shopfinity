@@ -12,13 +12,13 @@ export default function Home() {
       <header>
         <Carousel dots arrows>
           {ImageSliderLinks.map((url) => (
-            <div key={url} className="px-1 pb-2 h-96 w-full">
+            <div key={url} className="px-1 pb-2 h-[28rem] w-full">
               <img src={url} alt="" className="h-full w-full object-cover rounded-lg" />
             </div>
           ))}
         </Carousel>
 
-        <div className="mt-14 w-full flex gap-4">
+        <div className="mt-14 w-full flex justify-center gap-4">
           {categories.map((category) => <CategoryTag key={category.id} {...category} />)}
         </div>
       </header>

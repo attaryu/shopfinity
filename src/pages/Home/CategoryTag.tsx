@@ -1,9 +1,8 @@
-import type { Category } from '@/data/index';
-import { useEffect } from 'preact/hooks';
-
 import { useSearchParams } from 'react-router-dom';
 
-export default function CategoryTag({ id, name }: Category) {
+import type { Category } from '@/data/index';
+
+export default function CategoryTag({ id, name }: Readonly<Category>) {
   const [search, setSearch] = useSearchParams();
   
   function clickHandler() {
