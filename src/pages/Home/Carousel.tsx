@@ -13,7 +13,7 @@ export default function Carousel({ children, arrows = false, dots = false }: Pro
     adaptiveHeight: true,
     autoplay: true,
     infinite: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 3000,
     speed: 800,
     arrows,
     dots,
