@@ -12,10 +12,9 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div className="pt-20">
+      <div className="py-28 px-14">
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/my-cart' element={<div>My cart</div>} />
         </Routes>
       </div>
       <Footer />
