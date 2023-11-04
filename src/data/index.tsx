@@ -1,9 +1,9 @@
-type category = {
+export type Category = {
   id: number,
   name: string,
 };
 
-type Product = {
+export type Product = {
   id: number,
   name: string,
   price: number,
@@ -16,7 +16,7 @@ type Product = {
   discountPrice?: number,
 }
 
-export const category: Array<category> = [
+export const category: Array<Category> = [
   {
     id: 1,
     name: 'Celana'
