@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Home from '@/pages/Home';
 import Verification from '@/pages/Verification';
+import Product from '@/pages/Product';
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -18,6 +19,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<Verification />} />
           <Route path="/sign-up" element={<Verification />} />
+          <Route path="/product/:productId" element={<Product />} />
+          <Route path="/*" element={<div>404 Not Found</div>} />
         </Routes>
       </div>
       <Footer />
