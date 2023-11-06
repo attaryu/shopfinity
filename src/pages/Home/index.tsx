@@ -29,11 +29,11 @@ export default function Home() {
         <Section title="Hot Sale" data={getProducts(10)} />
 
         <section>
-          <h1 class="text-center text-4xl mb-14 font-bold">Fashion Pilihan</h1>
+          <h1 className="text-center text-4xl mb-14 font-bold">Fashion Pilihan</h1>
 
           <Carousel dots>
             {getProducts(5).map((item) => (
-              <div className="w-full">
+              <div key={item.id} className="w-full">
                 <div className="flex h-80 w-2/3 m-auto p-10 rounded-md bg-zinc-200 gap-10">
                   <div className="w-full flex flex-col">
                     <h2 className="text-3xl font-bold">{item.name}</h2>

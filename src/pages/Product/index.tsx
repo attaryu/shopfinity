@@ -1,11 +1,10 @@
-import type { Product } from '@/data/index';
 import { useParams } from 'react-router-dom';
 
 import { getAllCategory, getProducts } from '@/utils/dataFetching';
 
 export default function Product() {
   const { productId } = useParams();
-  const data = getProducts(1, (item) => item.id === Number(productId)) as Product;
+  const data = getProducts(1, (item) => item.id === Number(productId))[0];
   const categories = getAllCategory();
 
   return (

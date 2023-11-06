@@ -8,15 +8,11 @@ export function getProducts(
 ) {
   const copyProduct = filter ? product.filter(filter) : [...product];
 
-  if (length > 1) {
-    for (let i = copyProduct.length - 1; i >= 0; i--) {
-      const randomIndex = Math.floor(Math.random() * copyProduct.length);
-  
-      [copyProduct[randomIndex], copyProduct[i]] = [copyProduct[i], copyProduct[randomIndex]];
-    }
+  for (let i = copyProduct.length - 1; i >= 0; i--) {
+    const randomIndex = Math.floor(Math.random() * copyProduct.length);
 
-    return copyProduct.slice(0, length);
+    [copyProduct[randomIndex], copyProduct[i]] = [copyProduct[i], copyProduct[randomIndex]];
   }
 
-  return copyProduct[0];
+  return copyProduct.slice(0, length);
 }
