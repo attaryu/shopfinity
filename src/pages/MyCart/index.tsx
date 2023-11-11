@@ -31,7 +31,8 @@ export default function MyCart() {
 
           <label htmlFor={id} className="my-5 block">
             <p className="font-semibold text-lg">Kupon</p>
-            <select className="w-full outline outline-1 outline-zinc-900 p-2 mt-2 rounded-md">
+
+            <select id={id} className="w-full outline outline-1 outline-zinc-900 p-2 mt-2 rounded-md">
               <option value="0" selected>Pilih Kupon</option>
               <option value="10">Hemat 10%</option>
               <option value="20">Hemat 20%</option>
