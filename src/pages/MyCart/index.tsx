@@ -32,11 +32,11 @@ export default function MyCart() {
           <label htmlFor={id} className="my-5 block">
             <p className="font-semibold text-lg">Kupon</p>
             <select className="w-full outline outline-1 outline-zinc-900 p-2 mt-2 rounded-md">
-              <option selected disabled>Pilih Kupon</option>
-              <option value="10">K13PO</option>
-              <option value="20">Q09XP</option>
-              <option value="40">CS98Y</option>
-              <option value="5">5R35S</option>
+              <option value="0" selected>Pilih Kupon</option>
+              <option value="10">Hemat 10%</option>
+              <option value="20">Hemat 20%</option>
+              <option value="40">Hemat 40%</option>
+              <option value="5">Hemat 5%</option>
             </select>
           </label>
 
@@ -70,7 +70,7 @@ function Label({
   )
 }
 
-function Card({ id, name, image, price, discount, discountPrice, isDiscount }: Readonly<Product>) {
+function Card({ name, image, price, discount, discountPrice, isDiscount }: Readonly<Product>) {
   return (
     <li className="w-full flex p-3 bg-zinc-100 rounded-lg">
       <img src={image} alt={name} className="w-24 overflow-clip aspect-square rounded-lg" />
@@ -79,8 +79,8 @@ function Card({ id, name, image, price, discount, discountPrice, isDiscount }: R
         <h2 className="font-semibold text-xl overflow-hidden leading-6 h-6 w-full before:w-1/5 before:h-6 before:bg-gradient-to-l before:from-zinc-100 before:to-transparent relative before:bottom-0 before:right-0 before:absolute">{name}</h2>
 
         <div className="flex gap-4 items-center">
-          {isDiscount && <p className="py-0.5 px-1.5 border-2 font-semibold text-red-500 border-red-500 rounded-md">Rp. {discountPrice}</p>}
-          <p className={isDiscount ? 'text-sm line-through text-zinc-500' : 'font-medium' }>Rp. {price}</p>
+          {isDiscount && <p className="py-0.5 px-1.5 border-2 font-semibold text-red-500 border-red-500 rounded-md">Rp. {discountPrice!.toLocaleString('id')}</p>}
+          <p className={isDiscount ? 'text-sm line-through text-zinc-500' : 'font-medium' }>Rp. {price.toLocaleString('id')}</p>
           {isDiscount && <p className="font-semibold">{discount}%</p>}
         </div>
       </div>
