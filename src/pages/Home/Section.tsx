@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import type { Product } from '@/data/index';
+import useCartLogic from '@/hooks/useCartLogic';
 
 type Props = Readonly<{
   title: string,
@@ -28,6 +29,8 @@ function Card({
   discount,
   discountPrice,
 }: Readonly<Product>) {
+  const { inCart, cartHandler } = useCartLogic({ id, isDiscount, price, discountPrice });
+
   return (
     <li className="w-52">
       <img src={image} alt={name} className="object-cover h-56" />
@@ -60,8 +63,11 @@ function Card({
           >
             Lebih Lengkap
           </Link>
-          <button className="py-1.5 px-2 border-[1px] border-zinc-950 grid place-items-center rounded-md">
-            <i className="fi fi-rs-shopping-cart-add grid place-items-center" />
+          <button
+            className="py-1.5 px-2 border-[1px] border-zinc-950 grid place-items-center rounded-md"
+            onClick={cartHandler}
+          >
+            <i className={`fi ${inCart ? 'fi-ss-shopping-cart-check' : 'fi-rs-shopping-cart-add'} grid place-items-center`} />
           </button>
         </div>
       </div>

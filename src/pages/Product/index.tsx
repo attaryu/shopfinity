@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
 
 import { getAllCategory, getProducts } from '@/utils/dataFetching';
+import useCartLogic from '@/hooks/useCartLogic';
 
 export default function Product() {
   const { productId } = useParams();
   const data = getProducts(1, (item) => item.id === Number(productId))[0];
+  const { inCart, cartHandler } = useCartLogic(data);
   const categories = getAllCategory();
 
   return (
@@ -49,8 +51,11 @@ export default function Product() {
         <div className="w-1/2 flex gap-4 mt-14">
           <button className="w-full bg-zinc-900 text-white rounded-md py-2 text-xl">Beli</button>
 
-          <button className="grid place-items-center px-3 border-[1px] rounded-md border-zinc-900">
-            <i className="fi fi-rs-shopping-cart-add grid place-items-center" />
+          <button
+            className="grid place-items-center px-3 border-[1px] rounded-md border-zinc-900"
+            onClick={cartHandler}
+          >
+            <i className={`fi ${inCart ? 'fi-ss-shopping-cart-check' : 'fi-rs-shopping-cart-add'} grid place-items-center`} />
           </button>
         </div>
       </div>
