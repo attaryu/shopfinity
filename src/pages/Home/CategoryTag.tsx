@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 
-import type { Category } from '@/data/index';
+import { Category } from '@/data/index';
 
 export default function CategoryTag({ id, name }: Readonly<Category>) {
   const [search, setSearch] = useSearchParams();

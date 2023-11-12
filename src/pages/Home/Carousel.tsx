@@ -1,6 +1,5 @@
 import Slider, { Settings } from 'react-slick';
-
-import type { ComponentChildren } from 'preact';
+import { ComponentChildren } from 'preact';
 
 type Props = Readonly<{
   children: ComponentChildren,

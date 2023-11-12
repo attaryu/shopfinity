@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+
 import Carousel from './Carousel';
 import CategoryTag from './CategoryTag';
 import Section from './Section';

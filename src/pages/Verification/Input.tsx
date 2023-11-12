@@ -1,7 +1,5 @@
-import type { JSX } from 'preact';
-
+import { JSX } from 'preact';
 import { useId } from 'preact/compat';
-
 
 interface Props extends JSX.HTMLAttributes<HTMLInputElement> {
   label: string,

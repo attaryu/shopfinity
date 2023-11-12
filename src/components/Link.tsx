@@ -1,6 +1,5 @@
 import { Link as LinkReactRouter, useLocation } from 'react-router-dom';
-
-import type { ComponentChildren } from 'preact';
+import { ComponentChildren } from 'preact';
 
 type Props = Readonly<{
   to: string,

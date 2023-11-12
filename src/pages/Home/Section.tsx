@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import type { Product } from '@/data/index';
+import { Product } from '@/data/index';
 import useCartLogic from '@/hooks/useCartLogic';
 
 type Props = Readonly<{
