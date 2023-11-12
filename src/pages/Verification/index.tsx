@@ -28,7 +28,7 @@ export default function Verification() {
 
           <div className="mt-4 flex w-full gap-4">
             {['google', 'facebook'].map((item) => (
-              <button className="w-full outline outline-1 rounded-md outline-zinc-900 py-2.5 flex items-center justify-center gap-2.5 font-medium">
+              <button key={item} className="w-full outline outline-1 rounded-md outline-zinc-900 py-2.5 flex items-center justify-center gap-2.5 font-medium">
                 <img src={`/logo/${item}.png`} alt="" className="w-6 aspect-square"/>
                 {item.charAt(0).toUpperCase() + item.slice(1)}
               </button>
