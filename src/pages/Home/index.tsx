@@ -1,15 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import Carousel from './Carousel';
 import CategoryTag from './CategoryTag';
 import Section from './Section';
+
+import { Product } from '@/data/index';
 
 import { getAllCategory, getProducts } from '@/utils/dataFetching';
 
 export default function Home() {
   const ImageSliderLinks = ['/slider/1.avif', '/slider/2.avif', '/slider/3.avif', '/slider/4.avif', '/slider/5.avif'];
   const categories = getAllCategory();
-  
+  const [parameter] = useSearchParams();
+  const selectedCategory = parameter.get('categoryid');
+  let query = undefined;
+
+  if (selectedCategory) {
+    query = (item: Product) => item.category.includes(Number(selectedCategory));
+  }
+
   return (
     <>
       <header>
@@ -27,7 +36,7 @@ export default function Home() {
       </header>
 
       <main className="mt-28 flex flex-col gap-32">
-        <Section title="Hot Sale" data={getProducts(10)} />
+        <Section title="Hot Sale" data={getProducts(10, query)} />
 
         <section>
           <h1 className="text-center text-4xl mb-14 font-bold">Fashion Pilihan</h1>
