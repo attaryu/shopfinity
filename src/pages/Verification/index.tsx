@@ -1,9 +1,14 @@
-import { useLocation, Link } from 'react-router-dom';
+import { useEffect } from 'preact/hooks';
+import { Link, useLocation } from 'react-router-dom';
 
 import Input from './Input';
 
 export default function Verification() {
   const isSignIn = useLocation().pathname === '/sign-in';
+
+  useEffect(() => {
+    document.title = isSignIn ? 'Sign In' : 'Sign Up';
+  }, [isSignIn]);
 
   return (
     <main className="grid place-items-center h-[80vh]">

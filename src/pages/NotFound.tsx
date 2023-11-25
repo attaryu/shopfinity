@@ -1,7 +1,12 @@
+import { useEffect } from 'preact/hooks';
 import { useNavigate } from 'react-router-dom';
 
 export default function NotFound() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = '404 Not Found';
+  }, []);
 
   return (
     <main className="h-[70vh] grid place-items-center">

@@ -9,6 +9,7 @@ import Verification from '@/pages/Verification';
 
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import ResetScroll from '@/components/ResetScroll';
 
 import './index.css';
 
@@ -16,16 +17,18 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div className="py-28 px-14">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/sign-in" element={<Verification />} />
-          <Route path="/sign-up" element={<Verification />} />
-          <Route path="/product/:productId" element={<Product />} />
-          <Route path="/my-cart" element={<MyCart />} />
-          <Route path="/*" element={<NotFound />} />
-        </Routes>
-      </div>
+      <ResetScroll>
+        <div className="py-28 px-14">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/sign-in" element={<Verification />} />
+            <Route path="/sign-up" element={<Verification />} />
+            <Route path="/product/:productId" element={<Product />} />
+            <Route path="/my-cart" element={<MyCart />} />
+            <Route path="/*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </ResetScroll>
       <Footer />
     </BrowserRouter>
   );

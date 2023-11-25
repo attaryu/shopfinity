@@ -18,6 +18,10 @@ export default function MyCart() {
   setTotalWithCoupon(total - coupon * total);
 
   useEffect(() => {
+    document.title = 'My Cart';
+  }, []);
+
+  useEffect(() => {
     calculate();
   }, [...cart.data]);
 

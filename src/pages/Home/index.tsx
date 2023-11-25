@@ -1,3 +1,4 @@
+import { useEffect } from 'preact/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import Carousel from './Carousel';
@@ -14,6 +15,10 @@ export default function Home() {
   const [parameter] = useSearchParams();
   const selectedCategory = parameter.get('categoryid');
   let query = undefined;
+
+  useEffect(() => {
+    document.title = 'Shopfinity';
+  }, []);
 
   if (selectedCategory) {
     query = (item: Product) => item.category.includes(Number(selectedCategory));

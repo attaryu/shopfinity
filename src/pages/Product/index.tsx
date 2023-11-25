@@ -1,8 +1,10 @@
+import { useEffect } from 'preact/hooks';
 import { useParams } from 'react-router-dom';
 
-import { getAllCategory, getProducts } from '@/utils/dataFetching';
+import NotFound from '@/pages/NotFound';
+
 import useCartLogic from '@/hooks/useCartLogic';
-import NotFound from '../NotFound';
+import { getAllCategory, getProducts } from '@/utils/dataFetching';
 
 export default function Product() {
   const { productId } = useParams();
@@ -14,6 +16,10 @@ export default function Product() {
 
   const { inCart, cartHandler } = useCartLogic(data);
   const categories = getAllCategory();
+
+  useEffect(() => {
+    document.title = `Detail Product - ${data.name}`;
+  }, []);
 
   return (
     <main className="flex gap-14 items-center">
