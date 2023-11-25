@@ -1,4 +1,5 @@
 import Link from '@/components/Link';
+import { Link as LinkReactRouter } from 'react-router-dom';
 
 export default function Footer() {  
   return (
@@ -48,15 +49,15 @@ export default function Footer() {
           <h3 className="text-xl font-semibold">Get in Touch</h3>
 
           <div className="mt-5 flex gap-6 text-3xl">
-            <Link to="https://instagram.com">
+            <LinkReactRouter to="https://instagram.com">
               <i className="fi fi-brands-instagram text-white" /> 
-            </Link>
-            <Link to="https://linkedin.com">
+            </LinkReactRouter>
+            <LinkReactRouter to="https://linkedin.com">
               <i className="fi fi-brands-linkedin text-white" /> 
-            </Link>
-            <Link to="https://twitter.com">
+            </LinkReactRouter>
+            <LinkReactRouter to="https://twitter.com">
               <i className="fi fi-brands-twitter-alt-square text-white" />
-            </Link>
+            </LinkReactRouter>
           </div>
         </div>
       </div>
