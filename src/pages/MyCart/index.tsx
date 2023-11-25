@@ -41,30 +41,31 @@ export default function MyCart() {
             </ul>
           </section>
 
-          <section className="w-1/4 border-[1px] border-zinc-900 rounded-lg p-5 h-fit">
-          <Label title="Total" label="Rp" content={total.toLocaleString('id')} />
+          <div className="w-1/4">
+            <section className="w-full sticky top-36 border-[1px] border-zinc-900 rounded-lg p-5 h-fit">
+              <Label title="Total" label="Rp" content={total.toLocaleString('id')} />
 
-            <label htmlFor={id} className="my-5 block">
-              <p className="font-semibold text-lg">Kupon</p>
+              <label htmlFor={id} className="my-5 block">
+                <p className="font-semibold text-lg">Kupon</p>
 
-              <select
-                id={id}
-                onChange={(e) => setCoupon(parseFloat((e.target as HTMLInputElement).value))}
-                value={coupon}
-                className="w-full outline outline-1 outline-zinc-900 p-2 mt-2 rounded-md"
-              >
-                <option value="0" selected>Pilih Kupon</option>
-                <option value="0.1">Hemat 10%</option>
-                <option value="0.2">Hemat 20%</option>
-                <option value="0.35">Hemat 35%</option>
-                <option value="0.05">Hemat 5%</option>
-              </select>
-            </label>
+                <select
+                  id={id}
+                  onChange={(e) => setCoupon(parseFloat((e.target as HTMLInputElement).value))}
+                  value={coupon}
+                  className="w-full outline outline-1 outline-zinc-900 p-2 mt-2 rounded-md"
+                >
+                  <option value="0" selected>Pilih Kupon</option>
+                  <option value="0.1">Hemat 10%</option>
+                  <option value="0.2">Hemat 20%</option>
+                  <option value="0.35">Hemat 35%</option>
+                  <option value="0.05">Hemat 5%</option>
+                </select>
+              </label>
 
-          <Label title="Bayar" label="Rp" content={totalWithCoupon.toLocaleString('id')} />
-
-          <button className="bg-zinc-900 text-white w-full py-2.5 rounded-md mt-10">Checkout</button>
-          </section>
+              <Label title="Bayar" label="Rp" content={totalWithCoupon.toLocaleString('id')} />
+              <button className="bg-zinc-900 text-white w-full py-2.5 rounded-md mt-10">Checkout</button>
+            </section>
+          </div>
         </div>
       ) : (
         <p className="mt-2 h-[5.15rem]">
