@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "/dist",
+  "cleanUrls": true,
+  "installCommand": "npm i",
+  "rewrites": [
+    {
+      "source": "/[^.]+",
+      "destination": "/",
+      "statusCode": 200
+    }
+  ]
+}
