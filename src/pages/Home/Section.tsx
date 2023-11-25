@@ -8,12 +8,12 @@ type Props = Readonly<{
   data: Array<Product>,
 }>;
 
-export default function Section({ title, data }: Props) {  
+export default function Section({ title, data }: Props) {    
   return (
     <section>
       <h1 className="text-4xl font-bold">{title}</h1>
 
-      <ul className="mt-9 w-full overflow-x-scroll pb-12 grid grid-flow-col gap-10">
+      <ul className="mt-9 w-full overflow-x-scroll pb-12 flex">
         {data.map((item) => <Card key={item.id} {...item} />)}
       </ul>
     </section>
@@ -32,7 +32,7 @@ function Card({
   const { inCart, cartHandler } = useCartLogic({ id, isDiscount, price, discountPrice });
 
   return (
-    <li className="w-52">
+    <li className="w-52 mr-10">
       <img src={image} alt={name} className="object-cover h-56" />
 
       <div className="flex flex-col mt-5 h-36">
