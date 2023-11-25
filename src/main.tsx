@@ -1,14 +1,14 @@
 import { render } from 'preact';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Home from '@/pages/Home';
-import Verification from '@/pages/Verification';
-import Product from '@/pages/Product';
 import MyCart from '@/pages/MyCart';
 import NotFound from '@/pages/NotFound';
+import Product from '@/pages/Product';
+import Verification from '@/pages/Verification';
 
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
 
 import './index.css';
 
