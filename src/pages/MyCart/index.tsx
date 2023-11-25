@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'preact/hooks';
+import { useId, useState } from 'preact/hooks';
 
 import Link from '@/components/Link';
 import Card from './Card';
@@ -15,10 +15,8 @@ export default function MyCart() {
   const cartLength = cart.data.length;
   const { total } = cart;
 
-  useEffect(() => {
-    calculate();
-    setTotalWithCoupon(total - coupon * total);
-  }, [coupon, cartLength, total, ...cart.data]);
+  setTotalWithCoupon(total - coupon * total);
+  calculate();
 
   return (
     <main>
