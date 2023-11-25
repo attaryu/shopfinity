@@ -13,7 +13,7 @@ export default function Section({ title, data }: Props) {
     <section>
       <h1 className="text-4xl font-bold">{title}</h1>
 
-      <ul className="mt-9 w-full overflow-x-scroll pb-12 flex">
+      <ul className="mt-9 w-full overflow-x-scroll pb-12 flex gap-12">
         {data.map((item) => <Card key={item.id} {...item} />)}
       </ul>
     </section>
@@ -32,7 +32,7 @@ function Card({
   const { inCart, cartHandler } = useCartLogic({ id, isDiscount, price, discountPrice });
 
   return (
-    <li className="w-52 mr-10">
+    <li className="w-52">
       <img src={image} alt={name} className="object-cover h-56" />
 
       <div className="flex flex-col mt-5 h-36">
