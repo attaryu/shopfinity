@@ -68,7 +68,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <img src={item.image} alt={item.name} className="w-1/2 h-full object-cover rounded-lg" />
+                  <img src={item.image} alt={item.name} className="w-1/2 h-full object-cover rounded-lg relative before:content-['Image_not_found'] before:absolute before:w-full before:h-full before:bg-zinc-300 before:top-0 before:left-0 before:grid before:place-items-center before:text-zinc-600 before:text-sm" />
                 </div>
               </div>
             ))}

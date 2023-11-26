@@ -33,7 +33,7 @@ function Card({
 
   return (
     <li className="w-52">
-      <img src={image} alt={name} className="object-cover h-56" />
+      <img src={image} alt={name} className="object-cover h-56 relative before:content-['Image_not_found'] before:absolute before:w-full before:h-full before:bg-zinc-200 before:top-0 before:left-0 before:grid before:place-items-center before:text-zinc-500 before:text-sm" />
 
       <div className="flex flex-col mt-5 h-36">
         <h2

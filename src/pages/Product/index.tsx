@@ -23,7 +23,7 @@ export default function Product() {
 
   return (
     <main className="flex gap-14 items-center">
-      <img src={data.image} alt={data.name} className="w-1/3 h-[75vh] object-cover rounded-md overflow-clip" />
+      <img src={data.image} alt={data.name} className="w-1/3 h-[75vh] object-cover rounded-md overflow-clip relative before:content-['Image_not_found'] before:absolute before:w-full before:h-full before:bg-zinc-200 before:top-0 before:left-0 before:grid before:place-items-center before:text-zinc-500 before:text-sm" />
 
       <div className="w-full">
         <div className="flex gap-4">
