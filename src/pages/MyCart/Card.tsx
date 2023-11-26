@@ -23,7 +23,12 @@ export default function Card({ id, quantity }: Readonly<Omit<Cart, 'price'>>) {
 
   return (
     <li className="w-full flex p-3 bg-zinc-100 rounded-lg">
-      <img src={image} alt={name} className="w-24 overflow-clip aspect-square rounded-lg relative before:content-['Image_not_found'] before:absolute before:w-full before:h-full before:bg-zinc-200 before:top-0 before:left-0 before:grid before:place-items-center before:text-zinc-500 before:text-xs before:p-2.5" />
+      <img
+        src={image}
+        alt={name}
+        className="w-24 overflow-clip aspect-square rounded-lg relative before:content-['Image_not_found'] before:absolute before:w-full before:h-full before:bg-zinc-200 before:top-0 before:left-0 before:grid before:place-items-center before:text-zinc-500 before:text-xs before:p-2.5"
+        loading="lazy"
+      />
 
       <div className="ml-5 flex flex-col justify-center gap-3 w-full">
         <h2 className="font-semibold text-xl overflow-hidden leading-6 h-6 w-full before:w-1/5 before:h-6 before:bg-gradient-to-l before:from-zinc-100 before:to-transparent relative before:bottom-0 before:right-0 before:absolute cursor-pointer" tabIndex={0} onClick={detailProductHandler} onKeyPress={detailProductHandler}>{name}</h2>
