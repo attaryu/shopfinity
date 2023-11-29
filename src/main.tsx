@@ -10,11 +10,10 @@ import Verification from '@/pages/Verification';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 
-// import useResize from '@/hooks/useResize';
 import ResetScroll from '@/components/ResetScroll';
+import useResize from '@/hooks/useResize';
 
 import './index.css';
-import useResize from './hooks/useResize';
 
 function App() {
   const isSmall = useResize(900);

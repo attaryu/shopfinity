@@ -5,7 +5,6 @@ export default function useResize(size: number) {
   
   function resizeHandler() {
     const { matches } = matchMedia(`(max-width: ${size}px)`);
-    console.log('test');
 
     if (matches)
       setOffside(true);
