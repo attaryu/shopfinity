@@ -10,11 +10,10 @@ import Verification from '@/pages/Verification';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 
-// import useResize from '@/hooks/useResize';
 import ResetScroll from '@/components/ResetScroll';
+import useResize from '@/hooks/useResize';
 
 import './index.css';
-import useResize from './hooks/useResize';
 
 function App() {
   const isSmall = useResize(900);
@@ -22,7 +21,7 @@ function App() {
   if (isSmall) {
     return (
       <main className="flex items-center justify-center flex-col h-[100vh]">
-        <i class="fi fi-rs-tools grid place-items-center text-7xl" />
+        <i className="fi fi-rs-tools grid place-items-center text-7xl" />
 
         <h1 className="font-bold text-xl mt-8 mb-2">Under Development</h1>
 
