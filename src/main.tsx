@@ -20,12 +20,12 @@ function App() {
 
   if (isSmall) {
     return (
-      <main className="flex items-center justify-center flex-col h-[100vh]">
+      <main className="flex items-center justify-center flex-col h-screen">
         <i className="fi fi-rs-tools grid place-items-center text-7xl" />
 
         <h1 className="font-bold text-xl mt-8 mb-2">Under Development</h1>
 
-        <p className="text-center text-sm w-3/4">Saat ini Shopfinity tidak mendukung tampilan mobile, nantikan update berikutnya.</p>
+        <p className="text-center text-sm w-3/4">Shopfinity tidak mendukung tampilan mobile :(</p>
       </main>
     );
   }

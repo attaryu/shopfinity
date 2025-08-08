@@ -31,7 +31,7 @@ export default function Card({ id, quantity }: Readonly<Omit<Cart, 'price'>>) {
       />
 
       <div className="ml-5 flex flex-col justify-center gap-3 w-full">
-        <h2 className="font-semibold text-xl overflow-hidden leading-6 h-6 w-full before:w-1/5 before:h-6 before:bg-gradient-to-l before:from-zinc-100 before:to-transparent relative before:bottom-0 before:right-0 before:absolute cursor-pointer" tabIndex={0} onClick={detailProductHandler} onKeyPress={detailProductHandler}>{name}</h2>
+        <h2 className="font-semibold text-xl overflow-hidden leading-6 h-6 w-full before:w-1/5 before:h-6 before:bg-linear-to-l before:from-zinc-100 before:to-transparent relative before:bottom-0 before:right-0 before:absolute cursor-pointer" tabIndex={0} onClick={detailProductHandler} onKeyPress={detailProductHandler}>{name}</h2>
 
         <div className="flex gap-4 items-center">
           {isDiscount && <p className="py-0.5 px-1.5 border-2 font-semibold text-red-500 border-red-500 rounded-md">Rp. {discountPrice!.toLocaleString('id')}</p>}
@@ -60,7 +60,7 @@ export default function Card({ id, quantity }: Readonly<Omit<Cart, 'price'>>) {
         </div>
 
         <button
-          className="border-[1px] border-red-500 h-12 aspect-square rounded-md"
+          className="border border-red-500 h-12 aspect-square rounded-md"
           onClick={() => removeProduct(id)}
         >
           <i className="fi fi-rs-trash text-red-500 grid place-items-center text-xl" />

@@ -42,14 +42,14 @@ function Card({
 
       <div className="flex flex-col mt-5 h-36">
         <h2
-          className={`font-bold w-52 leading-5 ${name.length > 22 && 'h-10 relative overflow-hidden before:absolute before:bottom-0 before:right-0 before:bg-gradient-to-l before:from-white before:to-white/0 before:w-1/4 before:h-4'}`}
+          className={`font-bold w-52 leading-5 ${name.length > 22 && 'h-10 relative overflow-hidden before:absolute before:bottom-0 before:right-0 before:bg-linear-to-l before:from-white before:to-white/0 before:w-1/4 before:h-4'}`}
         >
           {name}
         </h2>
 
         <div className="mt-3 flex w-full justify-between items-center">
           {isDiscount && (
-            <div className="flex gap-1 items-center border-[1px] border-red-600 text-red-600 rounded-lg w-fit px-1.5 py-0.5">
+            <div className="flex gap-1 items-center border border-red-600 text-red-600 rounded-lg w-fit px-1.5 py-0.5">
               <i className="fi fi-rs-tags text-sm grid place-items-center" />
               <p className="font-medium text-sm">{discountPrice!.toLocaleString('id')}</p>
             </div>
@@ -69,7 +69,7 @@ function Card({
             Lebih Lengkap
           </Link>
           <button
-            className="py-1.5 px-2 border-[1px] border-zinc-950 grid place-items-center rounded-md"
+            className="py-1.5 px-2 border border-zinc-950 grid place-items-center rounded-md"
             onClick={cartHandler}
           >
             <i className={`fi ${inCart ? 'fi-ss-shopping-cart-check' : 'fi-rs-shopping-cart-add'} grid place-items-center`} />

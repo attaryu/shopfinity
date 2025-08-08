@@ -29,7 +29,7 @@ export default function Home() {
       <header>
         <Carousel dots>
           {ImageSliderLinks.map((url) => (
-            <div key={url} className="px-1 pb-2 h-[28rem] w-full">
+            <div key={url} className="px-1 pb-2 h-112 w-full">
               <img src={url} alt="" className="h-full w-full object-cover rounded-lg" />
             </div>
           ))}
@@ -62,7 +62,7 @@ export default function Home() {
                       >
                         Lebih Lengkap
                       </Link>
-                      <button className="h-full aspect-square border-[1px] border-zinc-950 grid place-items-center rounded-md">
+                      <button className="h-full aspect-square border border-zinc-950 grid place-items-center rounded-md">
                         <i className="fi fi-rs-shopping-cart-add grid place-items-center" />
                       </button>
                     </div>
