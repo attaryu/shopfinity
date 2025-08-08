@@ -25,7 +25,7 @@ function App() {
 
         <h1 className="font-bold text-xl mt-8 mb-2">Under Development</h1>
 
-        <p className="text-center text-sm w-3/4">Saat ini Shopfinity tidak mendukung tampilan mobile, nantikan update berikutnya.</p>
+        <p className="text-center text-sm w-3/4">Shopfinity tidak mendukung tampilan mobile :(</p>
       </main>
     );
   }
