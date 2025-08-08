@@ -3,7 +3,7 @@ import { Link as LinkReactRouter } from 'react-router-dom';
 
 export default function Footer() {  
   return (
-    <footer className="bg-gradient-to-br from-zinc-800 via-zinc-950 to-zinc-900 text-white">
+    <footer className="bg-linear-to-br from-zinc-800 via-zinc-950 to-zinc-900 text-white">
       <div className="flex justify-between items-start p-14">
         <div>
           <div className="flex gap-9 items-center">

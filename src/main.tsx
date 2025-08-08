@@ -20,7 +20,7 @@ function App() {
 
   if (isSmall) {
     return (
-      <main className="flex items-center justify-center flex-col h-[100vh]">
+      <main className="flex items-center justify-center flex-col h-screen">
         <i className="fi fi-rs-tools grid place-items-center text-7xl" />
 
         <h1 className="font-bold text-xl mt-8 mb-2">Under Development</h1>

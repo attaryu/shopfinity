@@ -46,7 +46,7 @@ export default function MyCart() {
           </section>
 
           <div className="w-1/4">
-            <section className="w-full sticky top-36 border-[1px] border-zinc-900 rounded-lg p-5 h-fit">
+            <section className="w-full sticky top-36 border border-zinc-900 rounded-lg p-5 h-fit">
               <Label title="Total" label="Rp" content={total.toLocaleString('id')} />
 
               <label htmlFor={id} className="my-5 block">

@@ -28,7 +28,7 @@ export default function Product() {
       <div className="w-full">
         <div className="flex gap-4">
           {data.category.map((id) => (
-            <button key={id} className="px-3 py-1 font-semibold outline outline-1 outline-zinc-900 rounded-md">
+            <button key={id} className="px-3 py-1 font-semibold outline outline-zinc-900 rounded-md">
               {categories.find((item) => item.id === id)!.name}
             </button>
           ))}
@@ -41,7 +41,7 @@ export default function Product() {
           <span className="text-lg font-semibold text-zinc-900">{data.shop}</span>
         </p>
 
-        <p className="border-[1px] rounded-md border-zinc-900 p-2.5 my-8">{data.description}</p>
+        <p className="border rounded-md border-zinc-900 p-2.5 my-8">{data.description}</p>
 
         <div className="flex gap-4 items-center">
           {data.isDiscount && (
@@ -64,7 +64,7 @@ export default function Product() {
           <button className="w-full bg-zinc-900 text-white rounded-md py-2 text-xl">Beli</button>
 
           <button
-            className="grid place-items-center px-3 border-[1px] rounded-md border-zinc-900"
+            className="grid place-items-center px-3 border rounded-md border-zinc-900"
             onClick={cartHandler}
           >
             <i className={`fi ${inCart ? 'fi-ss-shopping-cart-check' : 'fi-rs-shopping-cart-add'} grid place-items-center`} />
