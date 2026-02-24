@@ -4,7 +4,7 @@ import { Link as LinkReactRouter, useLocation } from 'react-router';
 
 type Props = Readonly<{
 	to: string;
-	type?: 'normal' | 'navbar' | 'button primary' | 'button secondary';
+	type?: 'normal' | 'button primary' | 'button secondary';
 	size?: 'sm' | 'normal';
 	children: string | ReactNode;
 }>;
@@ -15,19 +15,7 @@ export function Link({
 	size = 'normal',
 	children,
 }: Props) {
-	if (type === 'navbar') {
-		const location = useLocation().pathname;
-		const current = location == to && 'before:scale-x-100';
-
-		return (
-			<LinkReactRouter
-				to={to}
-				className={`relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:origin-right before:w-full before:h-0.5 before:bg-red-500 before:scale-x-0 before:transition-transform hover:before:origin-left hover:before:scale-x-100 before:duration-300 before:ease-in-out before:-z-10 z-0 ${current}`}
-			>
-				{children}
-			</LinkReactRouter>
-		);
-	} else if (type.includes('button')) {
+	if (type.includes('button')) {
 		const isPrimary = type.includes('primary');
 		const bg = isPrimary ? 'bg-zinc-900' : 'bg-white';
 		const text = isPrimary ? 'text-white' : 'text-zinc-900';
@@ -46,7 +34,7 @@ export function Link({
 	return (
 		<LinkReactRouter
 			to={to}
-			className="text-inherit font-semibold underline underline-offset-3"
+			className="text-inherit font-medium underline underline-offset-3"
 		>
 			{children}
 		</LinkReactRouter>

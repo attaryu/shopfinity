@@ -15,19 +15,6 @@ import { Footer } from './components/footer';
 import { Navbar } from './components/navbar';
 import useResize from './hooks/useResize';
 
-export const links: Route.LinksFunction = () => [
-	{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-	{
-		rel: 'preconnect',
-		href: 'https://fonts.gstatic.com',
-		crossOrigin: 'anonymous',
-	},
-	{
-		rel: 'stylesheet',
-		href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap',
-	},
-];
-
 export function Layout({ children }: { children: React.ReactNode }) {
 	const isSmall = useResize(900);
 
@@ -53,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				) : (
 					<>
 						<Navbar />
-						<div className="py-28 px-14">{children}</div>
+						{children}
 						<Footer />
 					</>
 				)}

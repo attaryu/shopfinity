@@ -1,6 +1,7 @@
 import { Link as LinkReactRouter } from 'react-router';
 
 import { Link } from '~/components/link';
+import { NavbarLink } from './navbar/navbar-link';
 
 export function Footer() {
 	return (
@@ -12,7 +13,7 @@ export function Footer() {
 
 						<div>
 							<p className="text-2xl font-bold">Shopfinity</p>
-							<small className="text-base font-extralight">
+							<small className="text-base">
 								Everthing your needs.
 							</small>
 						</div>
@@ -21,84 +22,60 @@ export function Footer() {
 					<div className="mt-12 flex w-96 items-center gap-4">
 						<i className="fi fi-ss-marker text-xl" />
 
-						<address className="w-full font-light text-sm">
+						<address className="w-full text-sm">
 							Jl. Keputih Tegal Tim. II No.5, Keputih, Kec. Sukolilo, Surabaya,
 							Jawa Timur 60111
 						</address>
 					</div>
 				</div>
 
-				<ul className="flex gap-x-24 font-semibold">
+				<ul className="flex gap-x-24 font-medium">
 					<div>
 						<li className="mb-2.5">
-							<Link to="/" type="navbar">
-								Home
-							</Link>
+							<NavbarLink to="/">Home</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/product" type="navbar">
-								Product
-							</Link>
+							<NavbarLink to="/product">Product</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/my-cart" type="navbar">
-								My Cart
-							</Link>
+							<NavbarLink to="/my-cart">My Cart</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/about" type="navbar">
-								About
-							</Link>
+							<NavbarLink to="/about">About</NavbarLink>
 						</li>
 					</div>
 					<div>
 						<li className="mb-2.5">
-							<Link to="/community" type="navbar">
-								Community
-							</Link>
+							<NavbarLink to="/community">Community</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/news" type="navbar">
-								News
-							</Link>
+							<NavbarLink to="/news">News</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/sales" type="navbar">
-								Sales
-							</Link>
+							<NavbarLink to="/sales">Sales</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/api" type="navbar">
-								Api
-							</Link>
+							<NavbarLink to="/api">Api</NavbarLink>
 						</li>
 					</div>
 					<div>
 						<li className="mb-2.5">
-							<Link to="/guides" type="navbar">
-								Guides
-							</Link>
+							<NavbarLink to="/guides">Guides</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/term-of-use" type="navbar">
-								Term of Use
-							</Link>
+							<NavbarLink to="/term-of-use">Term of Use</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/term-of-sale" type="navbar">
-								Term of Sale
-							</Link>
+							<NavbarLink to="/term-of-sale">Term of Sale</NavbarLink>
 						</li>
 						<li className="mb-2.5">
-							<Link to="/privacy-policy" type="navbar">
-								Privacy Policy
-							</Link>
+							<NavbarLink to="/privacy-policy">Privacy Policy</NavbarLink>
 						</li>
 					</div>
 				</ul>
 
 				<div>
-					<h3 className="text-xl font-semibold">Get in Touch</h3>
+					<h3 className="text-xl font-medium">Get in Touch</h3>
 
 					<div className="mt-5 flex gap-6 text-3xl">
 						<LinkReactRouter to="https://instagram.com">
@@ -114,7 +91,7 @@ export function Footer() {
 				</div>
 			</div>
 
-			<p className="font-light text-sm text-center py-7">
+			<p className="text-sm text-center py-7">
 				&copy; 2023 Shopfinity, Inc. All Rights Reserved
 			</p>
 		</footer>

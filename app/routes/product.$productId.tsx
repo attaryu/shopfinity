@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import type { Route } from './+types/product.$productId';
 
 import { getAllCategory, getProducts } from '~/utils/dataFetching';
@@ -10,9 +11,20 @@ export default function Product({ params }: Route.ComponentProps) {
 
 	if (!data) {
 		return (
-			<main>
+			<>
 				<title>Product Not Found - Shopfinity</title>
-			</main>
+
+				<main className="h-[90vh] flex flex-col items-center justify-center gap-4">
+					<h1 className="text-4xl font-bold">Product Not Found</h1>
+
+					<p className="text-center text-zinc-600">
+						Maaf, produk yang kamu cari tidak ditemukan. Coba cari{' '}
+						<Link to="/" className="underline">
+							produk lain
+						</Link>
+					</p>
+				</main>
+			</>
 		);
 	}
 
@@ -34,7 +46,7 @@ export default function Product({ params }: Route.ComponentProps) {
 						{data.category.map((id) => (
 							<button
 								key={id}
-								className="px-3 py-1 font-semibold outline outline-zinc-900 rounded-md"
+								className="px-3 py-1 font-medium outline outline-zinc-900 rounded-md"
 							>
 								{categories.find((item) => item.id === id)!.name}
 							</button>
@@ -45,7 +57,7 @@ export default function Product({ params }: Route.ComponentProps) {
 
 					<p className="mt-6 flex items-center gap-3">
 						<i className="fi fi-rs-shop grid place-items-center p-2 text-xl bg-zinc-900 text-white rounded-full" />
-						<span className="text-lg font-semibold text-zinc-900">
+						<span className="text-lg font-medium text-zinc-900">
 							{data.shop}
 						</span>
 					</p>
@@ -58,14 +70,14 @@ export default function Product({ params }: Route.ComponentProps) {
 						{data.isDiscount && (
 							<div className="flex gap-3 items-center border-2 border-red-600 text-red-600 rounded-md w-fit px-3 py-2">
 								<i className="fi fi-rs-tags text-2xl grid place-items-center" />
-								<p className="font-semibold text-xl">
+								<p className="font-medium text-xl">
 									Rp. {data.discountPrice!.toLocaleString('id')}
 								</p>
 							</div>
 						)}
 
 						<p
-							className={`${data.isDiscount ? 'text-lg line-through text-zinc-600' : 'text-2xl font-semibold'}`}
+							className={`${data.isDiscount ? 'text-lg line-through text-zinc-600' : 'text-2xl font-medium'}`}
 						>
 							Rp. {data.price.toLocaleString('id')}
 						</p>

@@ -1,33 +1,20 @@
 import { Link } from '~/components/link';
+import { NavbarLink } from './navbar-link';
 
 export function Navbar() {
 	return (
-		<nav className="bg-zinc-900 text-white w-full px-5 py-3.5 flex items-center fixed top-0 left-0 z-10">
+		<nav className="bg-white w-full px-5 py-3.5 flex items-center sticky top-0 left-0 z-10">
 			<div className="flex gap-5">
 				<img src="/logo/shopfinity.svg" alt="" className="w-8  " />
 				<p className="text-xl font-bold">Shopfinity</p>
 			</div>
 
-			<ul className="flex justify-between w-1/4 ml-16 font-semibold">
+			<ul className="flex gap-8 ml-16">
 				<li>
-					<Link to="/" type="navbar">
-						Home
-					</Link>
+					<NavbarLink to="/">Home</NavbarLink>
 				</li>
 				<li>
-					<Link to="#" type="navbar">
-						Product
-					</Link>
-				</li>
-				<li>
-					<Link to="/my-cart" type="navbar">
-						My Cart
-					</Link>
-				</li>
-				<li>
-					<Link to="#" type="navbar">
-						About
-					</Link>
+					<NavbarLink to="#">About</NavbarLink>
 				</li>
 			</ul>
 
