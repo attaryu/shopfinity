@@ -1,4 +1,4 @@
-import { Link } from '~/components/link';
+import LinkButton from '~/components/link-button';
 import { NavbarLink } from './navbar-link';
 
 export function Navbar() {
@@ -19,12 +19,12 @@ export function Navbar() {
 			</ul>
 
 			<div className="ml-auto flex gap-5">
-				<Link to="sign-in" type="button secondary" size="sm">
+				<LinkButton to="sign-in" type="button secondary" size="sm">
 					Sign In
-				</Link>
-				<Link to="sign-up" type="button primary" size="sm">
+				</LinkButton>
+				<LinkButton to="sign-up" type="button primary" size="sm">
 					Sign Up
-				</Link>
+				</LinkButton>
 			</div>
 		</nav>
 	);

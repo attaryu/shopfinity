@@ -1,5 +1,6 @@
 import type { Route } from './+types/root';
 
+import { Wrench } from 'lucide-react';
 import {
 	isRouteErrorResponse,
 	Links,
@@ -29,9 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body>
 				{isSmall ? (
 					<main className="flex items-center justify-center flex-col h-screen">
-						<i className="fi fi-rs-tools grid place-items-center text-7xl" />
-
-						<h1 className="font-bold text-xl mt-8 mb-2">Under Development</h1>
+						<Wrench className="" size={70} />
 
 						<p className="text-center text-sm w-3/4">
 							Shopfinity tidak mendukung tampilan mobile :(

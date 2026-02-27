@@ -1,4 +1,5 @@
 import { Link as LinkReactRouter } from 'react-router';
+import { MapPin, Instagram, Linkedin, Twitter } from 'lucide-react';
 
 import { Link } from '~/components/link';
 import { NavbarLink } from './navbar/navbar-link';
@@ -20,7 +21,7 @@ export function Footer() {
 					</div>
 
 					<div className="mt-12 flex w-96 items-center gap-4">
-						<i className="fi fi-ss-marker text-xl" />
+					<MapPin className="" size={20} />
 
 						<address className="w-full text-sm">
 							Jl. Keputih Tegal Tim. II No.5, Keputih, Kec. Sukolilo, Surabaya,
@@ -79,13 +80,13 @@ export function Footer() {
 
 					<div className="mt-5 flex gap-6 text-3xl">
 						<LinkReactRouter to="https://instagram.com">
-							<i className="fi fi-brands-instagram text-white" />
-						</LinkReactRouter>
-						<LinkReactRouter to="https://linkedin.com">
-							<i className="fi fi-brands-linkedin text-white" />
-						</LinkReactRouter>
-						<LinkReactRouter to="https://twitter.com">
-							<i className="fi fi-brands-twitter-alt-square text-white" />
+						<Instagram className="text-white" size={30} />
+					</LinkReactRouter>
+					<LinkReactRouter to="https://linkedin.com">
+						<Linkedin className="text-white" size={30} />
+					</LinkReactRouter>
+					<LinkReactRouter to="https://twitter.com">
+						<Twitter className="text-white" size={30} />
 						</LinkReactRouter>
 					</div>
 				</div>

@@ -1,5 +1,6 @@
-import { Link } from 'react-router';
 import type { Route } from './+types/product.$productId';
+
+import { Link } from 'react-router';
 
 import { getAllCategory, getProducts } from '~/utils/dataFetching';
 
