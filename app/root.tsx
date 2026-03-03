@@ -12,11 +12,9 @@ import {
 
 import './app.css';
 
-import { Footer } from './components/footer';
-import { Navbar } from './components/navbar';
-import useResize from './hooks/useResize';
+import useResize from './shared/hooks/use-resize';
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout() {
 	const isSmall = useResize(900);
 
 	return (
@@ -37,11 +35,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						</p>
 					</main>
 				) : (
-					<>
-						<Navbar />
-						{children}
-						<Footer />
-					</>
+					<Outlet />
 				)}
 				<ScrollRestoration />
 				<Scripts />
