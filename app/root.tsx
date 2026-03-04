@@ -1,5 +1,6 @@
 import type { Route } from './+types/root';
 
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Wrench } from 'lucide-react';
 import {
 	isRouteErrorResponse,
@@ -12,9 +13,12 @@ import {
 
 import './app.css';
 
+import { userQueryOption } from './features/auth/hooks/api/use-user';
+import { Toaster } from './shared/components/shadcn/ui/sonner';
 import useResize from './shared/hooks/use-resize';
+import { queryClient } from './shared/utils/query-client';
 
-export function Layout() {
+export default function Layout() {
 	const isSmall = useResize(900);
 
 	return (
@@ -35,8 +39,12 @@ export function Layout() {
 						</p>
 					</main>
 				) : (
-					<Outlet />
+					<QueryClientProvider client={queryClient}>
+						<Outlet />
+						<Toaster />
+					</QueryClientProvider>
 				)}
+
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -44,8 +52,12 @@ export function Layout() {
 	);
 }
 
-export default function App() {
-	return <Outlet />;
+export async function clientLoader() {
+	try {
+		await queryClient.ensureQueryData(userQueryOption);
+	} catch (error) {
+		console.error('root loader error: ', error);
+	}
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

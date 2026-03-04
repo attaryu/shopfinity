@@ -1,14 +1,64 @@
-import { Link } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
+import { HTTPError } from 'ky';
+import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import { Button } from '~/shared/components/shadcn/ui/button';
 import {
-	Field,
-	FieldLabel,
-	FieldSet,
+  Field,
+  FieldLabel,
+  FieldSet,
 } from '~/shared/components/shadcn/ui/field';
 import { Input } from '~/shared/components/shadcn/ui/input';
+import type { ApiResponse } from '~/shared/types/api-response';
+import { http } from '~/shared/utils/http';
+import { setSession } from '~/shared/utils/session-management';
+import type { LoginResponse } from '../types/api/login-response';
 
 export default function Login() {
+	const navigate = useNavigate();
+
+	const { isPending, mutate } = useMutation({
+		mutationFn: (data: { email: string; password: string }) =>
+			http
+				.post('auth/login', { json: data })
+				.json<ApiResponse<LoginResponse>>(),
+		onSuccess: (data) => {
+			if (data.success) {
+				toast.success('Login successful!');
+
+				setSession(data.data!.accessToken, data.data!.user);
+
+				if (data.data!.user.role === 'ADMIN') {
+					navigate('/admin');
+				} else {
+					navigate('/');
+				}
+			}
+		},
+		onError: (error) => {
+			console.error('Login error: ', error);
+
+			if (error instanceof HTTPError) {
+				const response = error.response as Response;
+				response.json().then((data: ApiResponse) => toast.error(data.message));
+			} else {
+				toast.error('An unexpected error occurred. Please try again later.');
+			}
+		},
+	});
+
+	function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+		e.preventDefault();
+
+		if (isPending) return;
+
+		mutate({
+			email: e.currentTarget.email.value,
+			password: e.currentTarget.password.value,
+		});
+	}
+
 	return (
 		<>
 			<title>Login - Shopfinity</title>
@@ -30,15 +80,18 @@ export default function Login() {
 						Enter your credentials to access your account
 					</p>
 
-					<form action="" className="mt-8">
+					<form action="" className="mt-8" onSubmit={handleSubmit}>
 						<FieldSet>
 							<Field>
 								<FieldLabel htmlFor="email">Email</FieldLabel>
 								<Input
 									id="email"
 									type="email"
+									name="email"
+									autoComplete="email"
 									placeholder="Enter your email"
 									className="bg-white"
+									required
 								/>
 							</Field>
 
@@ -47,12 +100,14 @@ export default function Login() {
 								<Input
 									id="password"
 									type="password"
+									name="password"
 									placeholder="Enter your password"
 									className="bg-white"
+									required
 								/>
 							</Field>
 
-							<Button type="submit" className="mt-4">
+							<Button type="submit" className="mt-4" disabled={isPending}>
 								Login
 							</Button>
 						</FieldSet>

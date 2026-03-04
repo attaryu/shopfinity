@@ -11,7 +11,7 @@ import { Input } from '~/shared/components/shadcn/ui/input';
 export default function Signup() {
 	return (
 		<>
-			<title>sign-up - Shopfinity</title>
+			<title>Sign up - Shopfinity</title>
 
 			<main className="grid grid-cols-2 grid-rows-1 h-[85vh] mx-52 mt-2 mb-14 rounded-xl overflow-hidden">
 				<div className="w-full h-full bg-zinc-900">
