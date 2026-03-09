@@ -54,9 +54,10 @@ export default function Layout() {
 
 export async function clientLoader() {
 	try {
-		await queryClient.ensureQueryData(userQueryOption);
-	} catch (error) {
-		console.error('root loader error: ', error);
+		const user = await queryClient.fetchQuery(userQueryOption);
+		return { user };
+	} catch {
+		return { user: null };
 	}
 }
 

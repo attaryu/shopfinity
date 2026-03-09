@@ -7,11 +7,25 @@ export default function AdminLayout() {
 }
 
 export async function clientLoader() {
-	const user = await queryClient.ensureQueryData(userQueryOption);
+	try {
+		const user = await queryClient.fetchQuery(userQueryOption);
 
-	if (!user) {
+		if (!user) {
+			throw redirect('/login');
+		}
+
+		if (user.role === 'USER') {
+			throw redirect('/');
+		}
+
+		return { user };
+	} catch (error) {
+		if (error instanceof Response) {
+			if (error.status >= 300 && error.status < 400) {
+				throw error;
+			}
+		}
+
 		throw redirect('/login');
-	} else if (user.role === 'USER') {
-		throw redirect('/');
 	}
 }
