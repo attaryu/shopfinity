@@ -35,7 +35,7 @@ export default function ProductDetail({ params }: Route.ComponentProps) {
 		<>
 			<title>Detail Product - {data.name}</title>
 
-			<main className="flex gap-14 items-center">
+			<main className="flex gap-14 items-center p-14">
 				<img
 					src={data.image}
 					alt={data.name}
