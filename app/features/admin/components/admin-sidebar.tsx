@@ -22,6 +22,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarSeparator,
+	useSidebar,
 } from '~/shared/components/shadcn/ui/sidebar';
 import {
 	DropdownMenu,
@@ -39,27 +40,31 @@ const navItems = [
 
 export function AdminSidebar() {
 	const location = useLocation();
+	const { state } = useSidebar();
+	const isCollapsed = state === 'collapsed';
 
 	return (
 		<Sidebar
 			collapsible="icon"
 			className="border-r border-zinc-200"
 		>
-			<SidebarHeader className="p-4">
+			{/* Header - Logo */}
+			<SidebarHeader className={isCollapsed ? 'p-2' : 'p-4'}>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							size="lg"
 							asChild
+							tooltip="Shopfinity Admin"
 							className="hover:bg-transparent active:bg-transparent"
 						>
 							<Link to="/admin" className="flex items-center gap-3">
-								<div className="flex items-center justify-center size-8 rounded-lg bg-zinc-900 text-white">
+								<div className="flex items-center justify-center size-8 shrink-0 rounded-lg bg-zinc-900 text-white transition-all duration-200">
 									<ShoppingBag className="size-4" />
 								</div>
-								<div className="flex flex-col leading-tight">
-									<span className="text-sm font-bold tracking-tight">Shopfinity</span>
-									<span className="text-xs text-muted-foreground">Admin Panel</span>
+								<div className="flex flex-col leading-tight overflow-hidden">
+									<span className="text-sm font-bold tracking-tight truncate">Shopfinity</span>
+									<span className="text-xs text-muted-foreground truncate">Admin Panel</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
@@ -69,6 +74,7 @@ export function AdminSidebar() {
 
 			<SidebarSeparator />
 
+			{/* Navigation */}
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -91,8 +97,8 @@ export function AdminSidebar() {
 											className="transition-all duration-200"
 										>
 											<Link to={item.href}>
-												<item.icon className="size-4" />
-												<span>{item.title}</span>
+												<item.icon className="size-4 shrink-0" />
+												<span className="truncate">{item.title}</span>
 											</Link>
 										</SidebarMenuButton>
 									</SidebarMenuItem>
@@ -110,8 +116,8 @@ export function AdminSidebar() {
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild tooltip="Back to Store">
 									<Link to="/" className="text-muted-foreground hover:text-foreground">
-										<Store className="size-4" />
-										<span>Back to Store</span>
+										<Store className="size-4 shrink-0" />
+										<span className="truncate">Back to Store</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -120,6 +126,7 @@ export function AdminSidebar() {
 				</SidebarGroup>
 			</SidebarContent>
 
+			{/* Footer - User */}
 			<SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -127,12 +134,13 @@ export function AdminSidebar() {
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuButton
 									size="lg"
+									tooltip="Admin"
 									className="data-[state=open]:bg-sidebar-accent"
 								>
-									<div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white text-xs font-bold shadow-sm">
+									<div className="flex items-center justify-center size-8 shrink-0 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white text-xs font-bold shadow-sm">
 										A
 									</div>
-									<div className="flex flex-col leading-tight text-left">
+									<div className="flex flex-col leading-tight text-left overflow-hidden">
 										<span className="text-sm font-medium truncate">
 											Admin
 										</span>
@@ -140,7 +148,7 @@ export function AdminSidebar() {
 											admin@shopfinity.com
 										</span>
 									</div>
-									<ChevronUp className="ml-auto size-4" />
+									<ChevronUp className="ml-auto size-4 shrink-0" />
 								</SidebarMenuButton>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
