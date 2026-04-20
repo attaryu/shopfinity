@@ -1,0 +1,161 @@
+import {
+	ChevronUp,
+	Home,
+	Layers,
+	LogOut,
+	Package,
+	ShoppingBag,
+	Store,
+	Tags,
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router';
+
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarSeparator,
+} from '~/shared/components/shadcn/ui/sidebar';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '~/shared/components/shadcn/ui/dropdown-menu';
+
+const navItems = [
+	{ title: 'Dashboard', icon: Home, href: '/admin' },
+	{ title: 'Products', icon: Package, href: '/admin/products' },
+	{ title: 'Categories', icon: Tags, href: '/admin/categories' },
+	{ title: 'Brands', icon: Layers, href: '/admin/brands' },
+];
+
+export function AdminSidebar() {
+	const location = useLocation();
+
+	return (
+		<Sidebar
+			collapsible="icon"
+			className="border-r border-zinc-200"
+		>
+			<SidebarHeader className="p-4">
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							size="lg"
+							asChild
+							className="hover:bg-transparent active:bg-transparent"
+						>
+							<Link to="/admin" className="flex items-center gap-3">
+								<div className="flex items-center justify-center size-8 rounded-lg bg-zinc-900 text-white">
+									<ShoppingBag className="size-4" />
+								</div>
+								<div className="flex flex-col leading-tight">
+									<span className="text-sm font-bold tracking-tight">Shopfinity</span>
+									<span className="text-xs text-muted-foreground">Admin Panel</span>
+								</div>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
+
+			<SidebarSeparator />
+
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+						Management
+					</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{navItems.map((item) => {
+								const isActive =
+									item.href === '/admin'
+										? location.pathname === '/admin'
+										: location.pathname.startsWith(item.href);
+
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton
+											asChild
+											isActive={isActive}
+											tooltip={item.title}
+											className="transition-all duration-200"
+										>
+											<Link to={item.href}>
+												<item.icon className="size-4" />
+												<span>{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+
+				<SidebarSeparator />
+
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild tooltip="Back to Store">
+									<Link to="/" className="text-muted-foreground hover:text-foreground">
+										<Store className="size-4" />
+										<span>Back to Store</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+
+			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton
+									size="lg"
+									className="data-[state=open]:bg-sidebar-accent"
+								>
+									<div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white text-xs font-bold shadow-sm">
+										A
+									</div>
+									<div className="flex flex-col leading-tight text-left">
+										<span className="text-sm font-medium truncate">
+											Admin
+										</span>
+										<span className="text-xs text-muted-foreground truncate">
+											admin@shopfinity.com
+										</span>
+									</div>
+									<ChevronUp className="ml-auto size-4" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								side="top"
+								className="w-[--radix-popper-anchor-width]"
+							>
+								<DropdownMenuItem className="cursor-pointer">
+									<LogOut className="size-4 mr-2" />
+									<span>Logout</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
+		</Sidebar>
+	);
+}
