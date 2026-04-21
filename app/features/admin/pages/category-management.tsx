@@ -18,13 +18,11 @@ import { CategoryFormDialog } from '../components/category-form-dialog';
 import { DeleteConfirmDialog } from '../components/delete-confirm-dialog';
 import { AdminSearch } from '../components/admin-search';
 import { AdminPagination } from '../components/admin-pagination';
-import { useAdminStore } from '../store/admin-store';
 import { useGetCategories } from '../hooks/api/use-get-categories';
+import { useDeleteCategory } from '../hooks/api/use-delete-category';
 import type { AdminCategory } from '../types/admin-types';
 
 export default function CategoryManagement() {
-	const { deleteCategory } = useAdminStore();
-
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [search, setSearch] = useState('');
@@ -39,6 +37,8 @@ export default function CategoryManagement() {
 		limit,
 		search,
 	});
+
+	const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
 
 	const categories = response?.data?.categories || [];
 	const metadata = response?.meta;
@@ -68,9 +68,16 @@ export default function CategoryManagement() {
 				setDeleteTarget(null);
 				return;
 			}
-			deleteCategory(deleteTarget.id);
-			toast.success(`"${deleteTarget.name}" has been deleted.`);
-			setDeleteTarget(null);
+			
+			deleteCategory(deleteTarget.id, {
+				onSuccess: () => {
+					setDeleteTarget(null);
+					// If we are on a page where there were items before delete but none after, go back 1 page if possible
+					if (categories.length === 1 && page > 1) {
+						setPage(page - 1);
+					}
+				},
+			});
 		}
 	}
 
@@ -239,8 +246,9 @@ export default function CategoryManagement() {
 
 			<DeleteConfirmDialog
 				open={!!deleteTarget}
-				onOpenChange={(open) => !open && setDeleteTarget(null)}
+				onOpenChange={(open) => !open && !isDeleting && setDeleteTarget(null)}
 				onConfirm={handleConfirmDelete}
+				isLoading={isDeleting}
 				title="Delete Category"
 				description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
 			/>

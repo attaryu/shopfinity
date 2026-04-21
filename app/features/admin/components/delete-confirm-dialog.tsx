@@ -15,6 +15,7 @@ interface DeleteConfirmDialogProps {
 	onConfirm: () => void;
 	title?: string;
 	description?: string;
+	isLoading?: boolean;
 }
 
 export function DeleteConfirmDialog({
@@ -23,6 +24,7 @@ export function DeleteConfirmDialog({
 	onConfirm,
 	title = 'Are you sure?',
 	description = 'This action cannot be undone. This will permanently delete this item.',
+	isLoading,
 }: DeleteConfirmDialogProps) {
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -32,12 +34,16 @@ export function DeleteConfirmDialog({
 					<AlertDialogDescription>{description}</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
 					<AlertDialogAction
-						onClick={onConfirm}
-						className="bg-destructive text-white hover:bg-destructive/90"
+						onClick={(e) => {
+							e.preventDefault();
+							onConfirm();
+						}}
+						disabled={isLoading}
+						className="bg-destructive text-white hover:bg-destructive/90 min-w-[80px]"
 					>
-						Delete
+						{isLoading ? 'Deleting...' : 'Delete'}
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
