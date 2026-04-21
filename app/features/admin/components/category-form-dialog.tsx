@@ -15,7 +15,7 @@ import {
 } from '~/shared/components/shadcn/ui/field';
 import { Input } from '~/shared/components/shadcn/ui/input';
 import { useCreateCategory } from '../hooks/api/use-create-category';
-import { useAdminStore } from '../store/admin-store';
+import { useUpdateCategory } from '../hooks/api/use-update-category';
 import type { AdminCategory, CategoryFormData } from '../types/admin-types';
 import { slugify } from '../utils/slugify';
 
@@ -37,8 +37,8 @@ export function CategoryFormDialog({
 	category,
 	onSuccess,
 }: CategoryFormDialogProps) {
-	const { addCategory, updateCategory } = useAdminStore();
 	const createCategory = useCreateCategory();
+	const updateCategory = useUpdateCategory();
 	const [form, setForm] = useState<CategoryFormData>(emptyForm);
 	const isEditing = !!category;
 
@@ -60,8 +60,21 @@ export function CategoryFormDialog({
 		e.preventDefault();
 
 		if (isEditing && category) {
-			updateCategory(category.id, form);
-			onOpenChange(false);
+			updateCategory.mutate(
+				{
+					id: category.id,
+					data: {
+						name: form.name,
+						slug: form.slug || undefined,
+					},
+				},
+				{
+					onSuccess: () => {
+						onOpenChange(false);
+						onSuccess?.();
+					},
+				},
+			);
 		} else {
 			createCategory.mutate(
 				{
@@ -123,13 +136,18 @@ export function CategoryFormDialog({
 							type="button"
 							variant="outline"
 							onClick={() => onOpenChange(false)}
-							disabled={createCategory.isPending}
+							disabled={createCategory.isPending || updateCategory.isPending}
 						>
 							Cancel
 						</Button>
-						<Button type="submit" disabled={createCategory.isPending}>
-							{createCategory.isPending
-								? 'Adding...'
+						<Button
+							type="submit"
+							disabled={createCategory.isPending || updateCategory.isPending}
+						>
+							{createCategory.isPending || updateCategory.isPending
+								? isEditing
+									? 'Updating...'
+									: 'Adding...'
 								: isEditing
 									? 'Update Category'
 									: 'Add Category'}
