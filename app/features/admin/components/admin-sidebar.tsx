@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import {
 	ChevronUp,
 	Home,
@@ -8,7 +9,7 @@ import {
 	Store,
 	Tags,
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 import {
 	Sidebar,
@@ -30,6 +31,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '~/shared/components/shadcn/ui/dropdown-menu';
+import type { User } from '~/shared/types/user';
+import { http } from '~/shared/utils/http';
+import { clearSession } from '~/shared/utils/session-management';
 
 const navItems = [
 	{ title: 'Dashboard', icon: Home, href: '/admin' },
@@ -38,10 +42,23 @@ const navItems = [
 	{ title: 'Brands', icon: Layers, href: '/admin/brands' },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+	user: User;
+}
+
+export function AdminSidebar({ user }: AdminSidebarProps) {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const { state } = useSidebar();
 	const isCollapsed = state === 'collapsed';
+
+	const { mutate: logout } = useMutation({
+		mutationFn: () => http.delete('auth/logout'),
+		onSuccess: () => {
+			clearSession();
+			navigate('/login');
+		},
+	});
 
 	return (
 		<Sidebar
@@ -134,18 +151,18 @@ export function AdminSidebar() {
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuButton
 									size="lg"
-									tooltip="Admin"
+									tooltip={user.fullname}
 									className="data-[state=open]:bg-sidebar-accent"
 								>
-									<div className="flex items-center justify-center size-8 shrink-0 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white text-xs font-bold shadow-sm">
-										A
+									<div className="flex items-center justify-center size-8 shrink-0 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white text-xs font-bold shadow-sm uppercase">
+										{user.fullname.charAt(0)}
 									</div>
 									<div className="flex flex-col leading-tight text-left overflow-hidden">
 										<span className="text-sm font-medium truncate">
-											Admin
+											{user.fullname}
 										</span>
 										<span className="text-xs text-muted-foreground truncate">
-											admin@shopfinity.com
+											{user.email}
 										</span>
 									</div>
 									<ChevronUp className="ml-auto size-4 shrink-0" />
@@ -155,7 +172,10 @@ export function AdminSidebar() {
 								side="top"
 								className="w-[--radix-popper-anchor-width]"
 							>
-								<DropdownMenuItem className="cursor-pointer">
+								<DropdownMenuItem
+									className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+									onClick={() => logout()}
+								>
 									<LogOut className="size-4 mr-2" />
 									<span>Logout</span>
 								</DropdownMenuItem>
