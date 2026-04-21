@@ -9,17 +9,14 @@ export interface ApiResponse<T = any> {
 
 export interface ErrorDetail {
   type: string;
-  details?: string | string[] | Record<string, unknown>;
+  details?: string | string[] | Record<string, any>;
 }
 
-export interface MetaData {
+export interface MetaData extends Record<string, any> {
   timestamp: string;
-  pagination?: PaginationMetaData;
-}
-
-export interface PaginationMetaData {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
+  totalItems?: number;
+  itemCount?: number;
+  itemsPerPage?: number;
+  totalPages?: number;
+  currentPage?: number;
 }

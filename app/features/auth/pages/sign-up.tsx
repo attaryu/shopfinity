@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { transformApiError } from '~/shared/utils/api-error';
 
 import { Button } from '~/shared/components/shadcn/ui/button';
 import {
@@ -32,9 +33,8 @@ export default function Signup() {
 			console.error('Signup error: ', error);
 
 			if (error instanceof HTTPError) {
-				const response = error.response as Response;
-				const data: ApiResponse = await response.json();
-				toast.error(data.message || 'Signup failed');
+				const response = (await error.response.json()) as ApiResponse;
+				toast.error(transformApiError(response));
 			} else {
 				toast.error('An unexpected error occurred. Please try again later.');
 			}

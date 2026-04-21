@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from '~/shared/components/shadcn/ui/button';
 import {
 	Dialog,
 	DialogContent,
@@ -7,15 +8,16 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '~/shared/components/shadcn/ui/dialog';
-import { Button } from '~/shared/components/shadcn/ui/button';
-import { Input } from '~/shared/components/shadcn/ui/input';
 import {
 	Field,
 	FieldLabel,
 	FieldSet,
 } from '~/shared/components/shadcn/ui/field';
-import { useAdminStore, slugify } from '../store/admin-store';
+import { Input } from '~/shared/components/shadcn/ui/input';
+import { useCreateCategory } from '../hooks/api/use-create-category';
+import { useAdminStore } from '../store/admin-store';
 import type { AdminCategory, CategoryFormData } from '../types/admin-types';
+import { slugify } from '../utils/slugify';
 
 interface CategoryFormDialogProps {
 	open: boolean;
@@ -34,6 +36,7 @@ export function CategoryFormDialog({
 	category,
 }: CategoryFormDialogProps) {
 	const { addCategory, updateCategory } = useAdminStore();
+	const createCategory = useCreateCategory();
 	const [form, setForm] = useState<CategoryFormData>(emptyForm);
 	const isEditing = !!category;
 
@@ -46,18 +49,30 @@ export function CategoryFormDialog({
 	}, [category, open]);
 
 	function handleNameChange(name: string) {
-		setForm({ name, slug: slugify(name) });
+		setForm((prev) => ({ ...prev, name }));
 	}
 
-	function handleSubmit(e: React.FormEvent) {
+	const slugPreview = slugify(form.name);
+
+	function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault();
 
 		if (isEditing && category) {
 			updateCategory(category.id, form);
+			onOpenChange(false);
 		} else {
-			addCategory(form);
+			createCategory.mutate(
+				{
+					name: form.name,
+					slug: form.slug ?? slugPreview,
+				},
+				{
+					onSuccess: () => {
+						onOpenChange(false);
+					},
+				},
+			);
 		}
-		onOpenChange(false);
 	}
 
 	return (
@@ -95,8 +110,7 @@ export function CategoryFormDialog({
 								onChange={(e) =>
 									setForm((prev) => ({ ...prev, slug: e.target.value }))
 								}
-								placeholder="auto-generated-slug"
-								className="text-muted-foreground"
+								placeholder={slugPreview || 'auto-generated-slug'}
 							/>
 						</Field>
 					</FieldSet>
@@ -106,11 +120,16 @@ export function CategoryFormDialog({
 							type="button"
 							variant="outline"
 							onClick={() => onOpenChange(false)}
+							disabled={createCategory.isPending}
 						>
 							Cancel
 						</Button>
-						<Button type="submit">
-							{isEditing ? 'Update Category' : 'Add Category'}
+						<Button type="submit" disabled={createCategory.isPending}>
+							{createCategory.isPending
+								? 'Adding...'
+								: isEditing
+									? 'Update Category'
+									: 'Add Category'}
 						</Button>
 					</DialogFooter>
 				</form>
