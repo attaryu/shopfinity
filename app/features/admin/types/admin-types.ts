@@ -18,6 +18,8 @@ export interface AdminCategory {
 	name: string;
 	slug: string;
 	productCount?: number;
+	createdAt?: string;
+	updatedAt?: string;
 }
 
 export interface AdminBrand {
@@ -26,8 +28,20 @@ export interface AdminBrand {
 	slug: string;
 	logo: string;
 	productCount?: number;
+	createdAt?: string;
+	updatedAt?: string;
 }
 
 export type ProductFormData = Omit<AdminProduct, 'id' | 'category' | 'brand' | 'createdAt'>;
-export type CategoryFormData = Omit<AdminCategory, 'id' | 'productCount'>;
-export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount'>;
+export type CategoryFormData = Omit<AdminCategory, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
+export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
+
+export interface GetCategoriesParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+}
+
+export interface CategoryListResponse {
+	categories: AdminCategory[];
+}

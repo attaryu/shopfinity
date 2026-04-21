@@ -25,6 +25,7 @@ import {
 import { AdminTopbar } from '../components/admin-topbar';
 import { ProductFormDialog } from '../components/product-form-dialog';
 import { DeleteConfirmDialog } from '../components/delete-confirm-dialog';
+import { AdminSearch } from '../components/admin-search';
 import { useAdminStore } from '../store/admin-store';
 import type { AdminProduct } from '../types/admin-types';
 
@@ -137,15 +138,11 @@ export default function ProductManagement() {
 			<div className="flex-1 p-6 space-y-5">
 				{/* Filters */}
 				<div className="flex items-center gap-3 flex-wrap">
-					<div className="relative flex-1 min-w-[250px] max-w-sm">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-						<Input
-							placeholder="Search products..."
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							className="pl-9 bg-white"
-						/>
-					</div>
+					<AdminSearch
+						placeholder="Search products..."
+						value={search}
+						onChange={setSearch}
+					/>
 
 					<Select value={categoryFilter} onValueChange={setCategoryFilter}>
 						<SelectTrigger className="w-[180px] bg-white">

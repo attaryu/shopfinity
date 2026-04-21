@@ -23,6 +23,7 @@ interface CategoryFormDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	category?: AdminCategory | null;
+	onSuccess?: () => void;
 }
 
 const emptyForm: CategoryFormData = {
@@ -34,6 +35,7 @@ export function CategoryFormDialog({
 	open,
 	onOpenChange,
 	category,
+	onSuccess,
 }: CategoryFormDialogProps) {
 	const { addCategory, updateCategory } = useAdminStore();
 	const createCategory = useCreateCategory();
@@ -69,6 +71,7 @@ export function CategoryFormDialog({
 				{
 					onSuccess: () => {
 						onOpenChange(false);
+						onSuccess?.();
 					},
 				},
 			);
