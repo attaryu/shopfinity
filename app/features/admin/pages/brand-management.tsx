@@ -17,6 +17,7 @@ import { AdminTopbar } from '../components/admin-topbar';
 import { BrandFormDialog } from '../components/brand-form-dialog';
 import { DeleteConfirmDialog } from '../components/delete-confirm-dialog';
 import { useAdminStore } from '../store/admin-store';
+import { MediaStorage } from '~/shared/lib/media-storage';
 import type { AdminBrand } from '../types/admin-types';
 
 export default function BrandManagement() {
@@ -111,7 +112,7 @@ export default function BrandManagement() {
 												<div className="size-10 rounded-full overflow-hidden border-2 border-zinc-100 bg-zinc-50 flex items-center justify-center shadow-sm">
 													{brand.logo ? (
 														<img
-															src={brand.logo}
+															src={MediaStorage.getUrl(brand.logo)}
 															alt={brand.name}
 															className="size-full object-cover"
 															onError={(e) => {

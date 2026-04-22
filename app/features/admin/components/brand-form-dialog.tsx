@@ -1,4 +1,7 @@
+import { Loader2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '~/shared/components/shadcn/ui/button';
 import {
 	Dialog,
 	DialogContent,
@@ -7,18 +10,16 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '~/shared/components/shadcn/ui/dialog';
-import { Button } from '~/shared/components/shadcn/ui/button';
-import { Input } from '~/shared/components/shadcn/ui/input';
 import {
 	Field,
 	FieldLabel,
 	FieldSet,
 } from '~/shared/components/shadcn/ui/field';
-import { useAdminStore, slugify } from '../store/admin-store';
-import type { AdminBrand, BrandFormData } from '../types/admin-types';
+import { Input } from '~/shared/components/shadcn/ui/input';
+import { MediaStorage } from '~/shared/lib/media-storage';
 import { useCreateBrand } from '../hooks/api/use-create-brand';
-import { toast } from 'sonner';
-import { Loader2, Upload } from 'lucide-react';
+import { slugify, useAdminStore } from '../store/admin-store';
+import type { AdminBrand, BrandFormData } from '../types/admin-types';
 
 const ALLOWED_MIME_TYPES = [
 	'image/png',
@@ -55,7 +56,7 @@ export function BrandFormDialog({
 	useEffect(() => {
 		if (brand) {
 			setForm({ name: brand.name, slug: brand.slug, logo: brand.logo });
-			setPreviewUrl(brand.logo);
+			setPreviewUrl(MediaStorage.getUrl(brand.logo));
 		} else {
 			setForm(emptyForm);
 			setPreviewUrl(null);
@@ -80,9 +81,7 @@ export function BrandFormDialog({
 		if (!file) return;
 
 		if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-			toast.error(
-				'Invalid file type. Please upload PNG, JPEG, WebP, or AVIF.',
-			);
+			toast.error('Invalid file type. Please upload PNG, JPEG, WebP, or AVIF.');
 			if (fileInputRef.current) fileInputRef.current.value = '';
 			return;
 		}
@@ -212,10 +211,7 @@ export function BrandFormDialog({
 						>
 							Cancel
 						</Button>
-						<Button
-							type="submit"
-							disabled={createBrand.isPending}
-						>
+						<Button type="submit" disabled={createBrand.isPending}>
 							{createBrand.isPending && (
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							)}

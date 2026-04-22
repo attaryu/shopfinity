@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { toast } from 'sonner';
 
-import { supabase } from '~/shared/lib/supabase';
+import { MediaStorage } from '~/shared/lib/media-storage';
 import type { ApiResponse } from '~/shared/types/api-response';
 import { transformApiError } from '~/shared/utils/api-error';
 import { http } from '~/shared/utils/http';
@@ -39,16 +39,10 @@ export function useCreateBrand() {
 					throw new Error(transformApiError(urlRes));
 				}
 
-				const { signUrl, path, token } = urlRes.data;
+				const { path, token } = urlRes.data;
 
-				// b. Upload to the presigned URL using official SDK method
-				const { error: uploadError } = await supabase.storage
-					.from(import.meta.env.VITE_SUPABASE_BUCKET)
-					.uploadToSignedUrl(path, token, file);
-
-				if (uploadError) {
-					throw new Error(`Failed to upload logo: ${uploadError.message}`);
-				}
+				// b. Upload to the presigned URL using MediaStorage abstraction
+				await MediaStorage.uploadToSignedUrl(path, token, file);
 
 				logoUrl = path;
 			}
