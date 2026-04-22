@@ -11,7 +11,6 @@ import { useState } from 'react';
 
 import { Badge } from '~/shared/components/shadcn/ui/badge';
 import { Button } from '~/shared/components/shadcn/ui/button';
-import { Checkbox } from '~/shared/components/shadcn/ui/checkbox';
 import {
 	Select,
 	SelectContent,
@@ -28,6 +27,7 @@ import {
 	TableRow,
 } from '~/shared/components/shadcn/ui/table';
 
+import { MediaStorage } from '~/shared/lib/media-storage';
 import { AdminPagination } from '../components/admin-pagination';
 import { AdminSearch } from '../components/admin-search';
 import { AdminTopbar } from '../components/admin-topbar';
@@ -38,7 +38,6 @@ import { useGetBrandsList } from '../hooks/api/use-get-brands-list';
 import { useGetCategoriesList } from '../hooks/api/use-get-categories-list';
 import { useGetProducts } from '../hooks/api/use-get-products';
 import type { AdminProduct } from '../types/admin-types';
-import { MediaStorage } from '~/shared/lib/media-storage';
 
 export default function ProductManagement() {
 	// State
@@ -79,28 +78,6 @@ export default function ProductManagement() {
 
 	const products = response?.data?.products || [];
 	const metadata = response?.meta;
-
-	// Select all
-	const allSelected =
-		products.length > 0 && products.every((p) => selectedIds.has(p.id));
-
-	function toggleAll() {
-		if (allSelected) {
-			setSelectedIds(new Set());
-		} else {
-			setSelectedIds(new Set(products.map((p) => p.id)));
-		}
-	}
-
-	function toggleOne(id: string) {
-		const next = new Set(selectedIds);
-		if (next.has(id)) {
-			next.delete(id);
-		} else {
-			next.add(id);
-		}
-		setSelectedIds(next);
-	}
 
 	function handleEdit(product: AdminProduct) {
 		setEditingProduct(product);
@@ -253,14 +230,7 @@ export default function ProductManagement() {
 					<Table>
 						<TableHeader>
 							<TableRow className="bg-zinc-50/80 hover:bg-zinc-50/80 border-b border-zinc-200/80">
-								<TableHead className="w-12 pl-4">
-									<Checkbox
-										checked={allSelected}
-										onCheckedChange={toggleAll}
-										aria-label="Select all"
-									/>
-								</TableHead>
-								<TableHead className="w-12 text-xs uppercase tracking-wider">
+								<TableHead className="w-12 pl-4 text-xs uppercase tracking-wider">
 									No
 								</TableHead>
 								<TableHead className="w-16 text-xs uppercase tracking-wider">
@@ -351,14 +321,7 @@ export default function ProductManagement() {
 											key={product.id}
 											className="group hover:bg-zinc-50/60 transition-colors duration-150"
 										>
-											<TableCell className="pl-4">
-												<Checkbox
-													checked={selectedIds.has(product.id)}
-													onCheckedChange={() => toggleOne(product.id)}
-													aria-label={`Select ${product.name}`}
-												/>
-											</TableCell>
-											<TableCell className="text-sm text-muted-foreground font-mono tabular-nums">
+											<TableCell className="pl-4 text-sm text-muted-foreground font-mono tabular-nums">
 												{displayIndex}
 											</TableCell>
 											<TableCell>
