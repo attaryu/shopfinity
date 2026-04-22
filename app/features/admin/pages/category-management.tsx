@@ -1,9 +1,9 @@
+import { Pencil, Plus, RefreshCw, Search, Tags, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { FolderOpen, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Button } from '~/shared/components/shadcn/ui/button';
 import { Badge } from '~/shared/components/shadcn/ui/badge';
+import { Button } from '~/shared/components/shadcn/ui/button';
 import {
 	Table,
 	TableBody,
@@ -13,13 +13,13 @@ import {
 	TableRow,
 } from '~/shared/components/shadcn/ui/table';
 
+import { AdminPagination } from '../components/admin-pagination';
+import { AdminSearch } from '../components/admin-search';
 import { AdminTopbar } from '../components/admin-topbar';
 import { CategoryFormDialog } from '../components/category-form-dialog';
 import { DeleteConfirmDialog } from '../components/delete-confirm-dialog';
-import { AdminSearch } from '../components/admin-search';
-import { AdminPagination } from '../components/admin-pagination';
-import { useGetCategories } from '../hooks/api/use-get-categories';
 import { useDeleteCategory } from '../hooks/api/use-delete-category';
+import { useGetCategories } from '../hooks/api/use-get-categories';
 import type { AdminCategory } from '../types/admin-types';
 
 export default function CategoryManagement() {
@@ -28,11 +28,18 @@ export default function CategoryManagement() {
 	const [search, setSearch] = useState('');
 
 	const [formOpen, setFormOpen] = useState(false);
-	const [editingCategory, setEditingCategory] =
-		useState<AdminCategory | null>(null);
+	const [editingCategory, setEditingCategory] = useState<AdminCategory | null>(
+		null,
+	);
 	const [deleteTarget, setDeleteTarget] = useState<AdminCategory | null>(null);
 
-	const { data: response, isLoading, isError, error, refetch } = useGetCategories({
+	const {
+		data: response,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useGetCategories({
 		page,
 		limit,
 		search,
@@ -68,7 +75,7 @@ export default function CategoryManagement() {
 				setDeleteTarget(null);
 				return;
 			}
-			
+
 			deleteCategory(deleteTarget.id, {
 				onSuccess: () => {
 					setDeleteTarget(null);
@@ -87,7 +94,11 @@ export default function CategoryManagement() {
 
 			<AdminTopbar
 				title="Categories"
-				description={metadata ? `${metadata.totalItems} total categories` : 'Manage your product categories'}
+				description={
+					metadata
+						? `${metadata.totalItems} total categories`
+						: 'Manage your product categories'
+				}
 			>
 				<Button onClick={handleAdd} className="gap-2 shadow-sm">
 					<Plus className="size-4" />
@@ -98,10 +109,10 @@ export default function CategoryManagement() {
 			<div className="flex-1 p-6 space-y-5">
 				{/* Filters */}
 				<div className="flex items-center gap-3 flex-wrap">
-					<AdminSearch 
-						value={search} 
-						onChange={handleSearch} 
-						placeholder="Search categories..." 
+					<AdminSearch
+						value={search}
+						onChange={handleSearch}
+						placeholder="Search categories..."
 					/>
 
 					{search && (
@@ -121,11 +132,21 @@ export default function CategoryManagement() {
 					<Table>
 						<TableHeader>
 							<TableRow className="bg-zinc-50/80 hover:bg-zinc-50/80 border-b border-zinc-200/80">
-								<TableHead className="w-20 pl-6 text-xs uppercase tracking-wider">No</TableHead>
-								<TableHead className="min-w-[180px] text-xs uppercase tracking-wider">Name</TableHead>
-								<TableHead className="min-w-[180px] text-xs uppercase tracking-wider">Slug</TableHead>
-								<TableHead className="text-center w-32 text-xs uppercase tracking-wider">Product Count</TableHead>
-								<TableHead className="text-right w-24 pr-6 text-xs uppercase tracking-wider">Actions</TableHead>
+								<TableHead className="w-20 pl-6 text-xs uppercase tracking-wider">
+									No
+								</TableHead>
+								<TableHead className="min-w-[180px] text-xs uppercase tracking-wider">
+									Name
+								</TableHead>
+								<TableHead className="min-w-[180px] text-xs uppercase tracking-wider">
+									Slug
+								</TableHead>
+								<TableHead className="text-center w-32 text-xs uppercase tracking-wider">
+									Product Count
+								</TableHead>
+								<TableHead className="text-right w-24 pr-6 text-xs uppercase tracking-wider">
+									Actions
+								</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -141,8 +162,15 @@ export default function CategoryManagement() {
 								<TableRow>
 									<TableCell colSpan={5} className="text-center py-16">
 										<div className="flex flex-col items-center gap-3">
-											<p className="text-sm text-red-500">{error?.message || 'Failed to load categories'}</p>
-											<Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+											<p className="text-sm text-red-500">
+												{error?.message || 'Failed to load categories'}
+											</p>
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => refetch()}
+												className="gap-2"
+											>
 												<RefreshCw className="size-4" />
 												Retry
 											</Button>
@@ -151,18 +179,25 @@ export default function CategoryManagement() {
 								</TableRow>
 							) : categories.length === 0 ? (
 								<TableRow>
-									<TableCell
-										colSpan={5}
-										className="text-center py-16"
-									>
+									<TableCell colSpan={5} className="text-center py-16">
 										<div className="flex flex-col items-center gap-3">
 											<div className="flex items-center justify-center size-14 rounded-2xl bg-zinc-100 text-zinc-400">
-												<FolderOpen className="size-7" />
+												{search ? (
+													<Search className="size-7" />
+												) : (
+													<Tags className="size-7" />
+												)}
 											</div>
 											<div>
-												<p className="font-medium text-sm text-foreground">No categories found</p>
+												<p className="font-medium text-sm text-foreground">
+													{search
+														? 'No category match your search'
+														: 'No category yet'}
+												</p>
 												<p className="text-xs text-muted-foreground mt-0.5">
-													{search ? 'Try adjusting your search' : 'Click "Add Category" to get started.'}
+													{search
+														? 'Try adjusting your search'
+														: 'Click "Add Category" to get started.'}
 												</p>
 											</div>
 										</div>
@@ -187,7 +222,11 @@ export default function CategoryManagement() {
 											</TableCell>
 											<TableCell className="text-center">
 												<Badge
-													variant={(category.productCount || 0) > 0 ? 'secondary' : 'outline'}
+													variant={
+														(category.productCount || 0) > 0
+															? 'secondary'
+															: 'outline'
+													}
 													className="text-xs font-mono tabular-nums min-w-[2rem] justify-center"
 												>
 													{category.productCount || 0}
@@ -221,7 +260,7 @@ export default function CategoryManagement() {
 					</Table>
 
 					{!isLoading && !isError && categories.length > 0 && metadata && (
-						<AdminPagination 
+						<AdminPagination
 							currentPage={page}
 							totalPages={metadata.totalPages || 1}
 							totalItems={metadata.totalItems || 0}
@@ -255,4 +294,3 @@ export default function CategoryManagement() {
 		</>
 	);
 }
-

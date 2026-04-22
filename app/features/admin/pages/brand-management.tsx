@@ -1,11 +1,4 @@
-import {
-	ImageOff,
-	Pencil,
-	Plus,
-	RefreshCw,
-	Search,
-	Trash2,
-} from 'lucide-react';
+import { Layers, Pencil, Plus, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -184,7 +177,7 @@ export default function BrandManagement() {
 												{search ? (
 													<Search className="size-7" />
 												) : (
-													<ImageOff className="size-7" />
+													<Layers className="size-7" />
 												)}
 											</div>
 											<div>
