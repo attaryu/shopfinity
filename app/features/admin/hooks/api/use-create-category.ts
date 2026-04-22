@@ -29,8 +29,9 @@ export function useCreateCategory() {
 
 			return response.data;
 		},
-		onSuccess: (data) => {
-			toast.success(`Category "${data?.name}" created successfully`);
+		onSuccess: () => {
+			toast.success('Category created successfully');
+			queryClient.invalidateQueries({ queryKey: ['categories'] });
 		},
 		onError: async (error: Error) => {
 			if (error instanceof HTTPError) {

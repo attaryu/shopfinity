@@ -5,7 +5,7 @@ export interface AdminProduct {
 	description: string;
 	price: number;
 	stock: number;
-	image: string;
+	imageUrl: string;
 	categoryId: string;
 	brandId: string;
 	category?: AdminCategory;
@@ -32,7 +32,9 @@ export interface AdminBrand {
 	updatedAt?: string;
 }
 
-export type ProductFormData = Omit<AdminProduct, 'id' | 'category' | 'brand' | 'createdAt'>;
+export type ProductFormData = Omit<AdminProduct, 'id' | 'category' | 'brand' | 'createdAt'> & {
+	imageFile?: File;
+};
 export type CategoryFormData = Omit<AdminCategory, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
 export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount' | 'createdAt' | 'updatedAt'> & {
 	logoFile?: File;
@@ -56,4 +58,28 @@ export interface GetBrandsParams {
 
 export interface BrandListResponse {
 	brands: AdminBrand[];
+}
+
+export interface GetProductsParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+	categoryId?: string;
+	brandId?: string;
+	sortBy?: string;
+	sortOrder?: 'asc' | 'desc';
+}
+
+export interface ProductListResponse {
+	products: AdminProduct[];
+}
+
+export interface CategoryListItem {
+	id: string;
+	name: string;
+}
+
+export interface BrandListItem {
+	id: string;
+	name: string;
 }

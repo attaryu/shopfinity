@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { ImageIcon, Loader2, Upload, X } from 'lucide-react';
+import { toast } from 'sonner';
+
 import {
 	Dialog,
 	DialogContent,
@@ -22,13 +25,19 @@ import {
 	FieldLabel,
 	FieldSet,
 } from '~/shared/components/shadcn/ui/field';
-import { useAdminStore, slugify } from '../store/admin-store';
+import { slugify } from '../utils/slugify';
 import type { AdminProduct, ProductFormData } from '../types/admin-types';
+import { useGetCategoriesList } from '../hooks/api/use-get-categories-list';
+import { useGetBrandsList } from '../hooks/api/use-get-brands-list';
+import { useCreateProduct } from '../hooks/api/use-create-product';
+import { useUpdateProduct } from '../hooks/api/use-update-product';
+import { MediaStorage } from '~/shared/lib/media-storage';
 
 interface ProductFormDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	product?: AdminProduct | null;
+	onSuccess?: () => void;
 }
 
 const emptyForm: ProductFormData = {
@@ -37,19 +46,31 @@ const emptyForm: ProductFormData = {
 	description: '',
 	price: 0,
 	stock: 0,
-	image: '',
+	imageUrl: '',
 	categoryId: '',
 	brandId: '',
 };
+
+const ALLOWED_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 export function ProductFormDialog({
 	open,
 	onOpenChange,
 	product,
+	onSuccess,
 }: ProductFormDialogProps) {
-	const { categories, brands, addProduct, updateProduct } = useAdminStore();
 	const [form, setForm] = useState<ProductFormData>(emptyForm);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const { data: categories = [], isLoading: isLoadingCats } = useGetCategoriesList();
+	const { data: brands = [], isLoading: isLoadingBrands } = useGetBrandsList();
+
+	const createMutation = useCreateProduct();
+	const updateMutation = useUpdateProduct(product?.id || '');
+
 	const isEditing = !!product;
+	const isPending = createMutation.isPending || updateMutation.isPending;
 
 	useEffect(() => {
 		if (product) {
@@ -59,14 +80,25 @@ export function ProductFormDialog({
 				description: product.description,
 				price: product.price,
 				stock: product.stock,
-				image: product.image,
+				imageUrl: product.imageUrl,
 				categoryId: product.categoryId,
 				brandId: product.brandId,
 			});
+			setPreviewUrl(MediaStorage.getUrl(product.imageUrl));
 		} else {
 			setForm(emptyForm);
+			setPreviewUrl(null);
+			if (fileInputRef.current) fileInputRef.current.value = '';
 		}
 	}, [product, open]);
+
+	useEffect(() => {
+		return () => {
+			if (previewUrl && previewUrl.startsWith('blob:')) {
+				URL.revokeObjectURL(previewUrl);
+			}
+		};
+	}, [previewUrl]);
 
 	function handleNameChange(name: string) {
 		setForm((prev) => ({
@@ -76,22 +108,51 @@ export function ProductFormDialog({
 		}));
 	}
 
-	function handleSubmit(e: React.FormEvent) {
+	function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+			toast.error('Invalid file type. Please upload PNG, JPEG, or WebP.');
+			if (fileInputRef.current) fileInputRef.current.value = '';
+			return;
+		}
+
+		setForm((prev) => ({ ...prev, imageFile: file }));
+		const objectUrl = URL.createObjectURL(file);
+		setPreviewUrl(objectUrl);
+	}
+
+	function removeFile() {
+		setForm((prev) => {
+			const { imageFile, ...rest } = prev;
+			return { ...rest, imageUrl: isEditing ? product?.imageUrl || '' : '' };
+		});
+		setPreviewUrl(isEditing ? MediaStorage.getUrl(product?.imageUrl || '') : null);
+		if (fileInputRef.current) fileInputRef.current.value = '';
+	}
+
+	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
-		if (isEditing && product) {
-			updateProduct(product.id, form);
-		} else {
-			addProduct(form);
+		try {
+			if (isEditing && product) {
+				await updateMutation.mutateAsync(form);
+			} else {
+				await createMutation.mutateAsync(form);
+			}
+			onSuccess?.();
+			onOpenChange(false);
+		} catch (error) {
+			// Error is handled by mutation's onError
 		}
-		onOpenChange(false);
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
 				<DialogHeader>
-					<DialogTitle className="text-lg">
+					<DialogTitle>
 						{isEditing ? 'Edit Product' : 'Add New Product'}
 					</DialogTitle>
 					<DialogDescription>
@@ -110,6 +171,7 @@ export function ProductFormDialog({
 								value={form.name}
 								onChange={(e) => handleNameChange(e.target.value)}
 								placeholder="Enter product name"
+								disabled={isPending}
 								required
 							/>
 						</Field>
@@ -124,6 +186,7 @@ export function ProductFormDialog({
 								}
 								placeholder="auto-generated-slug"
 								className="text-muted-foreground font-mono text-sm"
+								disabled={isPending}
 							/>
 						</Field>
 
@@ -137,6 +200,8 @@ export function ProductFormDialog({
 								}
 								placeholder="Describe the product..."
 								rows={3}
+								disabled={isPending}
+								required
 							/>
 						</Field>
 
@@ -156,6 +221,7 @@ export function ProductFormDialog({
 									}
 									placeholder="0"
 									className="tabular-nums"
+									disabled={isPending}
 									required
 								/>
 							</Field>
@@ -175,6 +241,7 @@ export function ProductFormDialog({
 									}
 									placeholder="0"
 									className="tabular-nums"
+									disabled={isPending}
 									required
 								/>
 							</Field>
@@ -188,9 +255,10 @@ export function ProductFormDialog({
 									onValueChange={(value) =>
 										setForm((prev) => ({ ...prev, categoryId: value }))
 									}
+									disabled={isPending || isLoadingCats}
 								>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Select category" />
+										<SelectValue placeholder={isLoadingCats ? "Loading..." : "Select category"} />
 									</SelectTrigger>
 									<SelectContent>
 										{categories.map((cat) => (
@@ -209,9 +277,10 @@ export function ProductFormDialog({
 									onValueChange={(value) =>
 										setForm((prev) => ({ ...prev, brandId: value }))
 									}
+									disabled={isPending || isLoadingBrands}
 								>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Select brand" />
+										<SelectValue placeholder={isLoadingBrands ? "Loading..." : "Select brand"} />
 									</SelectTrigger>
 									<SelectContent>
 										{brands.map((brand) => (
@@ -225,28 +294,54 @@ export function ProductFormDialog({
 						</div>
 
 						<Field>
-							<FieldLabel htmlFor="product-image">Image URL</FieldLabel>
-							<Input
-								id="product-image"
-								value={form.image}
-								onChange={(e) =>
-									setForm((prev) => ({ ...prev, image: e.target.value }))
-								}
-								placeholder="https://example.com/image.jpg"
-							/>
-							{form.image && (
-								<div className="mt-2 flex items-center gap-3">
-									<img
-										src={form.image}
-										alt="Product preview"
-										className="size-16 rounded-lg object-cover border border-zinc-200"
-										onError={(e) => {
-											(e.target as HTMLImageElement).style.display = 'none';
-										}}
+							<FieldLabel>Product Image</FieldLabel>
+							<div className="space-y-3">
+								<div
+									className={`
+										relative flex flex-col items-center justify-center gap-3 py-8 px-4 
+										border-2 border-dashed rounded-xl transition-all duration-200
+										${previewUrl ? 'border-zinc-200 bg-zinc-50/50' : 'border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50/80'}
+									`}
+								>
+									{previewUrl ? (
+										<div className="relative group">
+											<div className="size-32 rounded-lg overflow-hidden border border-zinc-200 bg-white ring-4 ring-white shadow-sm">
+												<img
+													src={previewUrl}
+													alt="Preview"
+													className="size-full object-cover"
+												/>
+											</div>
+											<button
+												type="button"
+												onClick={removeFile}
+												disabled={isPending}
+												className="absolute -top-2 -right-2 p-1.5 rounded-full bg-red-500 text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50"
+											>
+												<X className="size-3.5" />
+											</button>
+										</div>
+									) : (
+										<>
+											<div className="flex items-center justify-center size-12 rounded-2xl bg-zinc-100 text-zinc-400">
+												<ImageIcon className="size-6" />
+											</div>
+											<div className="text-center">
+												<p className="text-sm font-medium text-foreground">Click to upload image</p>
+												<p className="text-xs text-muted-foreground mt-0.5">PNG, JPG or WEBP up to 2MB</p>
+											</div>
+										</>
+									)}
+									<input
+										type="file"
+										ref={fileInputRef}
+										className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+										onChange={handleFileChange}
+										accept="image/*"
+										disabled={isPending}
 									/>
-									<span className="text-xs text-muted-foreground">Image preview</span>
 								</div>
-							)}
+							</div>
 						</Field>
 					</FieldSet>
 
@@ -255,11 +350,15 @@ export function ProductFormDialog({
 							type="button"
 							variant="outline"
 							onClick={() => onOpenChange(false)}
+							disabled={isPending}
 						>
 							Cancel
 						</Button>
-						<Button type="submit" className="shadow-sm">
-							{isEditing ? 'Update Product' : 'Add Product'}
+						<Button type="submit" className="shadow-sm min-w-[120px]" disabled={isPending}>
+							{isPending && (
+								<Loader2 className="mr-2 size-4 animate-spin" />
+							)}
+							{isEditing ? (isPending ? 'Updating...' : 'Update Product') : (isPending ? 'Adding...' : 'Add Product')}
 						</Button>
 					</DialogFooter>
 				</form>

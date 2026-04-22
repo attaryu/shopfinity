@@ -65,7 +65,7 @@ export function CategoryFormDialog({
 					id: category.id,
 					data: {
 						name: form.name,
-						slug: form.slug || undefined,
+						slug: form.slug || slugPreview,
 					},
 				},
 				{
@@ -79,7 +79,7 @@ export function CategoryFormDialog({
 			createCategory.mutate(
 				{
 					name: form.name,
-					slug: form.slug ?? slugPreview,
+					slug: form.slug || slugPreview,
 				},
 				{
 					onSuccess: () => {
