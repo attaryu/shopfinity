@@ -26,11 +26,11 @@ const seedCategories: AdminCategory[] = [
 ];
 
 const seedBrands: AdminBrand[] = [
-	{ id: 'brand-1', name: 'Erigo', slug: 'erigo', logo: 'https://down-id.img.susercontent.com/file/id-11134207-7r98v-ln9iblbq261xb7' },
-	{ id: 'brand-2', name: 'Aerostreet', slug: 'aerostreet', logo: 'https://down-id.img.susercontent.com/file/id-11134201-7r992-llemy453lax0a4' },
-	{ id: 'brand-3', name: 'Ventela', slug: 'ventela', logo: 'https://down-id.img.susercontent.com/file/0059714f49b1113a336e911c00b0a1aa' },
-	{ id: 'brand-4', name: 'Surfinclo', slug: 'surfinclo', logo: 'https://down-id.img.susercontent.com/file/sg-11134201-22120-zu9ynzjsdlkv70' },
-	{ id: 'brand-5', name: 'Eiger', slug: 'eiger', logo: 'https://down-id.img.susercontent.com/file/a5aa3574d75bf0f2eecbb88c112e19c1' },
+	{ id: 'brand-1', name: 'Erigo', slug: 'erigo', logoUrl: 'https://down-id.img.susercontent.com/file/id-11134207-7r98v-ln9iblbq261xb7' },
+	{ id: 'brand-2', name: 'Aerostreet', slug: 'aerostreet', logoUrl: 'https://down-id.img.susercontent.com/file/id-11134201-7r992-llemy453lax0a4' },
+	{ id: 'brand-3', name: 'Ventela', slug: 'ventela', logoUrl: 'https://down-id.img.susercontent.com/file/0059714f49b1113a336e911c00b0a1aa' },
+	{ id: 'brand-4', name: 'Surfinclo', slug: 'surfinclo', logoUrl: 'https://down-id.img.susercontent.com/file/sg-11134201-22120-zu9ynzjsdlkv70' },
+	{ id: 'brand-5', name: 'Eiger', slug: 'eiger', logoUrl: 'https://down-id.img.susercontent.com/file/a5aa3574d75bf0f2eecbb88c112e19c1' },
 ];
 
 const seedProducts: AdminProduct[] = [

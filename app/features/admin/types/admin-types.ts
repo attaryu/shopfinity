@@ -26,7 +26,7 @@ export interface AdminBrand {
 	id: string;
 	name: string;
 	slug: string;
-	logo: string;
+	logoUrl: string;
 	productCount?: number;
 	createdAt?: string;
 	updatedAt?: string;
@@ -46,4 +46,14 @@ export interface GetCategoriesParams {
 
 export interface CategoryListResponse {
 	categories: AdminCategory[];
+}
+
+export interface GetBrandsParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+}
+
+export interface BrandListResponse {
+	brands: AdminBrand[];
 }

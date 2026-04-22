@@ -19,7 +19,7 @@ export function useCreateBrand() {
 
 	return useMutation({
 		mutationFn: async (data: BrandFormData) => {
-			let logoUrl = data.logo;
+			let logoUrl = data.logoUrl;
 
 			// 1. Upload if file exists
 			if (data.logoFile) {

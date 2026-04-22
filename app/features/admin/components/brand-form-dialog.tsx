@@ -32,18 +32,20 @@ interface BrandFormDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	brand?: AdminBrand | null;
+	onSuccess?: () => void;
 }
 
 const emptyForm: BrandFormData = {
 	name: '',
 	slug: '',
-	logo: '',
+	logoUrl: '',
 };
 
 export function BrandFormDialog({
 	open,
 	onOpenChange,
 	brand,
+	onSuccess,
 }: BrandFormDialogProps) {
 	const { updateBrand } = useAdminStore();
 	const createBrand = useCreateBrand();
@@ -55,8 +57,8 @@ export function BrandFormDialog({
 
 	useEffect(() => {
 		if (brand) {
-			setForm({ name: brand.name, slug: brand.slug, logo: brand.logo });
-			setPreviewUrl(MediaStorage.getUrl(brand.logo));
+			setForm({ name: brand.name, slug: brand.slug, logoUrl: brand.logoUrl });
+			setPreviewUrl(MediaStorage.getUrl(brand.logoUrl));
 		} else {
 			setForm(emptyForm);
 			setPreviewUrl(null);
@@ -101,6 +103,7 @@ export function BrandFormDialog({
 				onOpenChange(false);
 			} else {
 				await createBrand.mutateAsync(form);
+				onSuccess?.();
 				onOpenChange(false);
 			}
 		} catch (error) {
@@ -190,9 +193,9 @@ export function BrandFormDialog({
 										</FieldLabel>
 										<Input
 											id="brand-logo-url"
-											value={form.logo}
+											value={form.logoUrl}
 											onChange={(e) =>
-												setForm((prev) => ({ ...prev, logo: e.target.value }))
+												setForm((prev) => ({ ...prev, logoUrl: e.target.value }))
 											}
 											placeholder="https://example.com/logo.png"
 											className="h-8 text-xs"
