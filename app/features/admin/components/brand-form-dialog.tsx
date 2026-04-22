@@ -18,7 +18,8 @@ import {
 import { Input } from '~/shared/components/shadcn/ui/input';
 import { MediaStorage } from '~/shared/lib/media-storage';
 import { useCreateBrand } from '../hooks/api/use-create-brand';
-import { slugify, useAdminStore } from '../store/admin-store';
+import { useUpdateBrand } from '../hooks/api/use-update-brand';
+import { slugify } from '../store/admin-store';
 import type { AdminBrand, BrandFormData } from '../types/admin-types';
 
 const ALLOWED_MIME_TYPES = [
@@ -47,8 +48,8 @@ export function BrandFormDialog({
 	brand,
 	onSuccess,
 }: BrandFormDialogProps) {
-	const { updateBrand } = useAdminStore();
 	const createBrand = useCreateBrand();
+	const updateBrand = useUpdateBrand();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const [form, setForm] = useState<BrandFormData>(emptyForm);
@@ -99,7 +100,8 @@ export function BrandFormDialog({
 
 		try {
 			if (isEditing && brand) {
-				updateBrand(brand.id, form);
+				await updateBrand.mutateAsync({ id: brand.id, data: form });
+				onSuccess?.();
 				onOpenChange(false);
 			} else {
 				await createBrand.mutateAsync(form);
@@ -182,26 +184,6 @@ export function BrandFormDialog({
 										className="hidden"
 									/>
 								</div>
-
-								{isEditing && (
-									<div className="space-y-1.5">
-										<FieldLabel
-											htmlFor="brand-logo-url"
-											className="text-[10px] uppercase tracking-wider text-muted-foreground"
-										>
-											Or manual Logo URL
-										</FieldLabel>
-										<Input
-											id="brand-logo-url"
-											value={form.logoUrl}
-											onChange={(e) =>
-												setForm((prev) => ({ ...prev, logoUrl: e.target.value }))
-											}
-											placeholder="https://example.com/logo.png"
-											className="h-8 text-xs"
-										/>
-									</div>
-								)}
 							</div>
 						</Field>
 					</FieldSet>
@@ -214,8 +196,11 @@ export function BrandFormDialog({
 						>
 							Cancel
 						</Button>
-						<Button type="submit" disabled={createBrand.isPending}>
-							{createBrand.isPending && (
+						<Button
+							type="submit"
+							disabled={createBrand.isPending || updateBrand.isPending}
+						>
+							{(createBrand.isPending || updateBrand.isPending) && (
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							)}
 							{isEditing ? 'Update Brand' : 'Add Brand'}
