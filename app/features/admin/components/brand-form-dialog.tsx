@@ -19,7 +19,7 @@ import { Input } from '~/shared/components/shadcn/ui/input';
 import { MediaStorage } from '~/shared/lib/media-storage';
 import { useCreateBrand } from '../hooks/api/use-create-brand';
 import { useUpdateBrand } from '../hooks/api/use-update-brand';
-import { slugify } from '../store/admin-store';
+import { slugify } from '../utils/slugify';
 import type { AdminBrand, BrandFormData } from '../types/admin-types';
 
 const ALLOWED_MIME_TYPES = [

@@ -26,16 +26,14 @@ import { AdminSearch } from '../components/admin-search';
 import { AdminTopbar } from '../components/admin-topbar';
 import { BrandFormDialog } from '../components/brand-form-dialog';
 import { DeleteConfirmDialog } from '../components/delete-confirm-dialog';
+import { useDeleteBrand } from '../hooks/api/use-delete-brand';
 import { useGetBrands } from '../hooks/api/use-get-brands';
-import { useAdminStore } from '../store/admin-store';
 import type { AdminBrand } from '../types/admin-types';
 
 export default function BrandManagement() {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
 	const [search, setSearch] = useState('');
-
-	const { deleteBrand, getBrandProductCount } = useAdminStore();
 
 	const [formOpen, setFormOpen] = useState(false);
 	const [editingBrand, setEditingBrand] = useState<AdminBrand | null>(null);
@@ -52,6 +50,8 @@ export default function BrandManagement() {
 		limit,
 		search,
 	});
+
+	const { mutate: deleteBrand, isPending: isDeleting } = useDeleteBrand();
 
 	const brands = response?.data?.brands || [];
 	const metadata = response?.meta;
@@ -73,19 +73,25 @@ export default function BrandManagement() {
 
 	function handleConfirmDelete() {
 		if (deleteTarget) {
-			// Prefer API productCount, fallback to store if needed
-			const count =
-				deleteTarget.productCount ?? getBrandProductCount(deleteTarget.id);
+			const count = deleteTarget.productCount ?? 0;
 			if (count > 0) {
 				toast.error(
 					`Cannot delete "${deleteTarget.name}" — ${count} product(s) are using this brand.`,
 				);
 				setDeleteTarget(null);
+
 				return;
 			}
-			deleteBrand(deleteTarget.id);
-			toast.success(`"${deleteTarget.name}" has been deleted.`);
-			setDeleteTarget(null);
+
+			deleteBrand(deleteTarget.id, {
+				onSuccess: () => {
+					setDeleteTarget(null);
+					// If we are on a page where there were items before delete but none after, go back 1 page if possible
+					if (brands.length === 1 && page > 1) {
+						setPage(page - 1);
+					}
+				},
+			});
 		}
 	}
 
@@ -199,8 +205,7 @@ export default function BrandManagement() {
 							) : (
 								brands.map((brand, index) => {
 									const displayIndex = (page - 1) * limit + index + 1;
-									const count =
-										brand.productCount ?? getBrandProductCount(brand.id);
+									const count = brand.productCount ?? 0;
 									return (
 										<TableRow
 											key={brand.id}
@@ -297,8 +302,9 @@ export default function BrandManagement() {
 
 			<DeleteConfirmDialog
 				open={!!deleteTarget}
-				onOpenChange={(open) => !open && setDeleteTarget(null)}
+				onOpenChange={(open) => !open && !isDeleting && setDeleteTarget(null)}
 				onConfirm={handleConfirmDelete}
+				isLoading={isDeleting}
 				title="Delete Brand"
 				description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
 			/>
