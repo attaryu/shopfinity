@@ -83,3 +83,22 @@ export interface BrandListItem {
 	id: string;
 	name: string;
 }
+
+export interface LowStockProduct {
+	id: string;
+	name: string;
+	slug: string;
+	stock: number;
+	imageUrl: string;
+}
+
+export interface DashboardData {
+	total: {
+		product: number;
+		category: number;
+		brand: number;
+	};
+	allStock: number;
+	productStockAverate: number;
+	lowStockProducts: LowStockProduct[];
+}
