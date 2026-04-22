@@ -34,7 +34,9 @@ export interface AdminBrand {
 
 export type ProductFormData = Omit<AdminProduct, 'id' | 'category' | 'brand' | 'createdAt'>;
 export type CategoryFormData = Omit<AdminCategory, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
-export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
+export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount' | 'createdAt' | 'updatedAt'> & {
+	logoFile?: File;
+};
 
 export interface GetCategoriesParams {
 	page?: number;
