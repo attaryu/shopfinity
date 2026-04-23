@@ -8,6 +8,7 @@ import {
 	CollapsibleTrigger,
 } from '~/shared/components/shadcn/ui/collapsible';
 import { ScrollArea } from '~/shared/components/shadcn/ui/scroll-area';
+import { MediaStorage } from '~/shared/lib/media-storage';
 
 type Props = Readonly<{
 	defaultOpen?: boolean;
@@ -16,6 +17,8 @@ type Props = Readonly<{
 	items: {
 		id: string | number;
 		name: string;
+		slug?: string;
+		logoUrl?: string;
 	}[];
 }>;
 
@@ -34,7 +37,9 @@ export function FilterBarSelect({
 		const paramValue = searchParams.get(searchParamKey)?.toLowerCase();
 
 		return (
-			items.find((item) => item.name.toLowerCase() === paramValue)?.id ?? null
+			items.find(
+				(item) => (item.slug ?? item.name.toLowerCase()) === paramValue,
+			)?.id ?? null
 		);
 	});
 
@@ -56,7 +61,10 @@ export function FilterBarSelect({
 						params.delete(searchParamKey);
 					} else {
 						const selectedItem = items.find((item) => item.id === id);
-						params.set(searchParamKey, selectedItem?.name.toLowerCase() ?? '');
+						params.set(
+							searchParamKey,
+							selectedItem?.slug ?? selectedItem?.name.toLowerCase() ?? '',
+						);
 					}
 					return params;
 				},
@@ -71,21 +79,28 @@ export function FilterBarSelect({
 			defaultOpen={defaultOpen}
 		>
 			<CollapsibleTrigger className="text-white p-2 rounded-lg w-full flex justify-between items-center text-sm cursor-pointer">
-				{selectedItemName ?? triggerText}
-				<ChevronsUpDown size={16} className="text-white" />
+				<span className="truncate pr-2">{selectedItemName ?? triggerText}</span>
+				<ChevronsUpDown size={16} className="text-white shrink-0" />
 			</CollapsibleTrigger>
 
 			<CollapsibleContent>
-				<ScrollArea className="h-40 scroll-x-hidden bg-zinc-100 rounded-lg mt-3">
-					<ul>
-						{items.map(({ id, name }) => (
+				<ScrollArea className="h-44 scroll-x-hidden bg-zinc-100 rounded-lg mt-3">
+					<ul className="py-1">
+						{items.map(({ id, name, logoUrl }) => (
 							<li key={id}>
 								<button
 									type="button"
-									className={`text-sm p-2 hover:bg-zinc-200 focus-within:outline-zinc-500 text-start w-full cursor-pointer ${selected === id ? 'bg-zinc-300' : ''}`}
+									className={`text-sm px-3 py-2.5 hover:bg-zinc-200 focus-within:outline-zinc-500 text-start w-full cursor-pointer flex items-center gap-3 transition-colors ${selected === id ? 'bg-zinc-300 font-bold' : ''}`}
 									onClick={() => handleSelect(id)}
 								>
-									{name}
+									{logoUrl && (
+										<img
+											src={MediaStorage.getUrl(logoUrl)}
+											alt={name}
+											className="w-5 h-5 object-contain bg-white rounded p-0.5"
+										/>
+									)}
+									<span className="truncate">{name}</span>
 								</button>
 							</li>
 						))}
