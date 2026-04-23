@@ -1,0 +1,91 @@
+import type { Route } from './+types/root';
+
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Wrench } from 'lucide-react';
+import {
+	isRouteErrorResponse,
+	Links,
+	Meta,
+	Outlet,
+	Scripts,
+	ScrollRestoration,
+} from 'react-router';
+
+import './app.css';
+
+import { userQueryOption } from './features/auth/hooks/api/use-user';
+import { Toaster } from './shared/components/shadcn/ui/sonner';
+import useResize from './shared/hooks/use-resize';
+import { queryClient } from './shared/utils/query-client';
+
+export default function Layout() {
+	const isSmall = useResize(900);
+
+	return (
+		<html lang="en">
+			<head>
+				<meta charSet="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<Meta />
+				<Links />
+			</head>
+			<body>
+				{isSmall ? (
+					<main className="flex items-center justify-center flex-col h-screen">
+						<Wrench className="" size={70} />
+
+						<p className="text-center text-sm w-3/4">
+							Shopfinity tidak mendukung tampilan mobile :(
+						</p>
+					</main>
+				) : (
+					<QueryClientProvider client={queryClient}>
+						<Outlet />
+						<Toaster />
+					</QueryClientProvider>
+				)}
+
+				<ScrollRestoration />
+				<Scripts />
+			</body>
+		</html>
+	);
+}
+
+export async function clientLoader() {
+	try {
+		const user = await queryClient.fetchQuery(userQueryOption);
+		return { user };
+	} catch {
+		return { user: null };
+	}
+}
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+	let message = 'Oops!';
+	let details = 'An unexpected error occurred.';
+	let stack: string | undefined;
+
+	if (isRouteErrorResponse(error)) {
+		message = error.status === 404 ? '404' : 'Error';
+		details =
+			error.status === 404
+				? 'The requested page could not be found.'
+				: error.statusText || details;
+	} else if (import.meta.env.DEV && error && error instanceof Error) {
+		details = error.message;
+		stack = error.stack;
+	}
+
+	return (
+		<main className="pt-16 p-4 container mx-auto">
+			<h1>{message}</h1>
+			<p>{details}</p>
+			{stack && (
+				<pre className="w-full p-4 overflow-x-auto">
+					<code>{stack}</code>
+				</pre>
+			)}
+		</main>
+	);
+}
