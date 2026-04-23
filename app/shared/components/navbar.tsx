@@ -52,6 +52,14 @@ export function Navbar() {
 					</DropdownMenuTrigger>
 
 					<DropdownMenuContent className="bg-white rounded-md border border-zinc-300 p-2">
+						{user.data.role === 'ADMIN' && (
+							<DropdownMenuItem>
+								<Button variant="ghost" asChild>
+									<Link to="/admin">Dashboard</Link>
+								</Button>
+							</DropdownMenuItem>
+						)}
+
 						<DropdownMenuItem>
 							<Button variant="ghost" onClick={() => logout()}>
 								Logout

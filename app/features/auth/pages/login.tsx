@@ -2,12 +2,13 @@ import { useMutation } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { transformApiError } from '~/shared/utils/api-error';
 
 import { Button } from '~/shared/components/shadcn/ui/button';
 import {
-  Field,
-  FieldLabel,
-  FieldSet,
+	Field,
+	FieldLabel,
+	FieldSet,
 } from '~/shared/components/shadcn/ui/field';
 import { Input } from '~/shared/components/shadcn/ui/input';
 import type { ApiResponse } from '~/shared/types/api-response';
@@ -36,12 +37,12 @@ export default function Login() {
 				}
 			}
 		},
-		onError: (error) => {
+		onError: async (error) => {
 			console.error('Login error: ', error);
 
 			if (error instanceof HTTPError) {
-				const response = error.response as Response;
-				response.json().then((data: ApiResponse) => toast.error(data.message));
+				const response = (await error.response.json()) as ApiResponse;
+				toast.error(transformApiError(response));
 			} else {
 				toast.error('An unexpected error occurred. Please try again later.');
 			}

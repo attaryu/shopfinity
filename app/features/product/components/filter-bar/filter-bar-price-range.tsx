@@ -23,13 +23,13 @@ export function FilterBarPriceRange({}) {
 
 	const minPrice = lodash.debounce(
 		(e: React.ChangeEvent<HTMLInputElement>) =>
-			setParam('min-price', e.target.value),
+			setParam('minPrice', e.target.value),
 		300,
 	);
 
 	const maxPrice = lodash.debounce(
 		(e: React.ChangeEvent<HTMLInputElement>) =>
-			setParam('max-price', e.target.value),
+			setParam('maxPrice', e.target.value),
 		300,
 	);
 
@@ -42,14 +42,14 @@ export function FilterBarPriceRange({}) {
 				placeholder="Min"
 				className="bg-white"
 				onChange={minPrice}
-				defaultValue={searchParams.get('min-price') ?? ''}
+				defaultValue={searchParams.get('minPrice') ?? ''}
 			/>
 			<Input
 				type="number"
 				placeholder="Max"
 				className="bg-white"
 				onChange={maxPrice}
-				defaultValue={searchParams.get('max-price') ?? ''}
+				defaultValue={searchParams.get('maxPrice') ?? ''}
 			/>
 		</div>
 	);

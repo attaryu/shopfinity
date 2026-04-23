@@ -1,0 +1,104 @@
+export interface AdminProduct {
+	id: string;
+	name: string;
+	slug: string;
+	description: string;
+	price: number;
+	stock: number;
+	imageUrl: string;
+	categoryId: string;
+	brandId: string;
+	category?: AdminCategory;
+	brand?: AdminBrand;
+	createdAt: string;
+}
+
+export interface AdminCategory {
+	id: string;
+	name: string;
+	slug: string;
+	productCount?: number;
+	createdAt?: string;
+	updatedAt?: string;
+}
+
+export interface AdminBrand {
+	id: string;
+	name: string;
+	slug: string;
+	logoUrl: string;
+	productCount?: number;
+	createdAt?: string;
+	updatedAt?: string;
+}
+
+export type ProductFormData = Omit<AdminProduct, 'id' | 'category' | 'brand' | 'createdAt'> & {
+	imageFile?: File;
+};
+export type CategoryFormData = Omit<AdminCategory, 'id' | 'productCount' | 'createdAt' | 'updatedAt'>;
+export type BrandFormData = Omit<AdminBrand, 'id' | 'productCount' | 'createdAt' | 'updatedAt'> & {
+	logoFile?: File;
+};
+
+export interface GetCategoriesParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+}
+
+export interface CategoryListResponse {
+	categories: AdminCategory[];
+}
+
+export interface GetBrandsParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+}
+
+export interface BrandListResponse {
+	brands: AdminBrand[];
+}
+
+export interface GetProductsParams {
+	page?: number;
+	limit?: number;
+	search?: string;
+	categoryId?: string;
+	brandId?: string;
+	sortBy?: string;
+	sortOrder?: 'asc' | 'desc';
+}
+
+export interface ProductListResponse {
+	products: AdminProduct[];
+}
+
+export interface CategoryListItem {
+	id: string;
+	name: string;
+}
+
+export interface BrandListItem {
+	id: string;
+	name: string;
+}
+
+export interface LowStockProduct {
+	id: string;
+	name: string;
+	slug: string;
+	stock: number;
+	imageUrl: string;
+}
+
+export interface DashboardData {
+	total: {
+		product: number;
+		category: number;
+		brand: number;
+	};
+	allStock: number;
+	productStockAverate: number;
+	lowStockProducts: LowStockProduct[];
+}

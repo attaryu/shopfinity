@@ -18,5 +18,8 @@ export default [
 	// Admin routes with admin layout
 	layout('shared/layouts/admin-layout.tsx', [
 		route('admin', 'features/admin/pages/admin-home.tsx'),
+		route('admin/products', 'features/admin/pages/product-management.tsx'),
+		route('admin/categories', 'features/admin/pages/category-management.tsx'),
+		route('admin/brands', 'features/admin/pages/brand-management.tsx'),
 	]),
 ] satisfies RouteConfig;

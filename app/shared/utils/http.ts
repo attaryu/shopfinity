@@ -26,6 +26,7 @@ const processQueue = (error: any, token: string | null = null) => {
 
 export const http = ky.create({
 	prefixUrl: import.meta.env.VITE_API_URL + '/',
+	credentials: 'include',
 	hooks: {
 		beforeRequest: [
 			(request) => {
@@ -66,12 +67,13 @@ export const http = ky.create({
 						processQueue(null, data!.accessToken);
 						setSession(data!.accessToken, data!.user);
 
-						options.headers = {
-							...options.headers,
-							Authorization: `Bearer ${data!.accessToken}`,
-						};
-
-						return ky(request, options);
+						return ky(request, {
+							...options,
+							headers: {
+								...options.headers,
+								Authorization: `Bearer ${data!.accessToken}`,
+							},
+						});
 					} catch (refreshError) {
 						processQueue(refreshError, null);
 

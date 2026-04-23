@@ -1,31 +1,44 @@
-import { Outlet, redirect } from 'react-router';
-import { userQueryOption } from '~/features/auth/hooks/api/use-user';
-import { queryClient } from '../utils/query-client';
+import { Outlet, redirect, useLoaderData } from 'react-router';
 
-export default function AdminLayout() {
-	return <Outlet />;
-}
+import { AdminSidebar } from '~/features/admin/components/admin-sidebar';
+import { userQueryOption } from '~/features/auth/hooks/api/use-user';
+
+import {
+	SidebarInset,
+	SidebarProvider,
+} from '../components/shadcn/ui/sidebar';
+import { TooltipProvider } from '../components/shadcn/ui/tooltip';
+import { queryClient } from '../utils/query-client';
 
 export async function clientLoader() {
 	try {
-		const user = await queryClient.fetchQuery(userQueryOption);
+		const user = await queryClient.ensureQueryData(userQueryOption);
 
 		if (!user) {
-			throw redirect('/login');
+			return redirect('/login');
 		}
 
-		if (user.role === 'USER') {
-			throw redirect('/');
+		if (user.role !== 'ADMIN') {
+			return redirect('/');
 		}
 
 		return { user };
-	} catch (error) {
-		if (error instanceof Response) {
-			if (error.status >= 300 && error.status < 400) {
-				throw error;
-			}
-		}
-
-		throw redirect('/login');
+	} catch {
+		return redirect('/login');
 	}
+}
+
+export default function AdminLayout() {
+	const { user } = useLoaderData<typeof clientLoader>();
+
+	return (
+		<TooltipProvider>
+			<SidebarProvider>
+				<AdminSidebar user={user} />
+				<SidebarInset className="bg-zinc-50/50 min-h-screen">
+					<Outlet />
+				</SidebarInset>
+			</SidebarProvider>
+		</TooltipProvider>
+	);
 }
