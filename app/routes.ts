@@ -11,7 +11,7 @@ export default [
 		index('features/product/pages/product-list.tsx'),
 		route('login', 'features/auth/pages/login.tsx'),
 		route('sign-up', 'features/auth/pages/sign-up.tsx'),
-		route('product/:productId', 'features/product/pages/product-detail.tsx'),
+		route('product/:idOrSlug', 'features/product/pages/product-detail.tsx'),
 		route('*', 'pages/not-found.tsx'),
 	]),
 

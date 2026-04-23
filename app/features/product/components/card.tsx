@@ -4,7 +4,7 @@ import type { ClientProduct } from '../types/product-types';
 import { Link } from 'react-router';
 
 export function Card({
-	id,
+	slug,
 	name,
 	price,
 	imageUrl,
@@ -44,7 +44,7 @@ export function Card({
 				<h2
 					className={`font-bold w-full leading-5 hover:underline text-zinc-900 ${name.length > 22 && 'h-10 relative overflow-hidden'}`}
 				>
-					<Link to={`/product/${id}`}>{name}</Link>
+					<Link to={`/product/${slug}`}>{name}</Link>
 				</h2>
 
 				<div className="mt-2 flex w-full justify-between items-center">
