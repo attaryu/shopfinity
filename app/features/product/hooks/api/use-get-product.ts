@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { ApiResponse } from '~/shared/types/api-response';
 import { http } from '~/shared/utils/http';
+import { isApiAvailable, getLocalProduct } from '~/shared/utils/local-data';
 import type { ClientProduct } from '../../types/product-types';
 
 export interface FullProduct extends ClientProduct {
@@ -14,15 +15,23 @@ export function useGetProduct(idOrSlug: string) {
 	return useQuery({
 		queryKey: ['products', idOrSlug],
 		queryFn: async () => {
-			const response = await http
-				.get(`products/${idOrSlug}`)
-				.json<ApiResponse<{ product: FullProduct }>>();
-
-			if (!response.success) {
-				throw new Error(response.message || 'Failed to fetch product');
+			if (!isApiAvailable()) {
+				return getLocalProduct(idOrSlug) ?? undefined;
 			}
 
-			return response.data?.product;
+			try {
+				const response = await http
+					.get(`products/${idOrSlug}`)
+					.json<ApiResponse<{ product: FullProduct }>>();
+
+				if (!response.success) {
+					throw new Error(response.message || 'Failed to fetch product');
+				}
+
+				return response.data?.product;
+			} catch {
+				return getLocalProduct(idOrSlug) ?? undefined;
+			}
 		},
 		enabled: !!idOrSlug,
 	});

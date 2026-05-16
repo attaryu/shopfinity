@@ -6,6 +6,8 @@ import { MediaStorage } from '~/shared/lib/media-storage';
 import type { ApiResponse } from '~/shared/types/api-response';
 import { transformApiError } from '~/shared/utils/api-error';
 import { http } from '~/shared/utils/http';
+import { isApiAvailable } from '~/shared/utils/local-data';
+import { useAdminStore } from '../../store/admin-store';
 import type { AdminProduct, ProductFormData } from '../../types/admin-types';
 
 export function useUpdateProduct(id: string) {
@@ -13,19 +15,27 @@ export function useUpdateProduct(id: string) {
 
 	return useMutation({
 		mutationFn: async (data: ProductFormData) => {
+			if (!isApiAvailable()) {
+				useAdminStore.getState().updateProduct(id, {
+					name: data.name,
+					slug: data.slug,
+					description: data.description,
+					price: data.price,
+					stock: data.stock,
+					imageUrl: data.imageUrl || '',
+					categoryId: data.categoryId,
+					brandId: data.brandId,
+				});
+				return { id, ...data } as AdminProduct;
+			}
+
 			let imageUrl = data.imageUrl;
 
-			// 1. Upload if file exists
 			if (data.imageFile) {
 				const file = data.imageFile;
-
-				// a. Get presigned URL from backend
 				const urlRes = await http
 					.post('products/upload-url', {
-						json: {
-							fileName: file.name,
-							fileType: file.type,
-						},
+						json: { fileName: file.name, fileType: file.type },
 					})
 					.json<ApiResponse<{ signUrl: string; path: string; token: string }>>();
 
@@ -34,33 +44,21 @@ export function useUpdateProduct(id: string) {
 				}
 
 				const { path, token } = urlRes.data;
-
-				// b. Upload to the presigned URL
 				await MediaStorage.uploadToSignedUrl(path, token, file);
-
 				imageUrl = path;
 			}
 
-			// 2. Call Backend API
 			const response = await http
 				.put(`products/${id}`, {
 					json: {
-						name: data.name,
-						slug: data.slug,
-						description: data.description,
-						price: data.price,
-						stock: data.stock,
-						imageUrl: imageUrl,
-						categoryId: data.categoryId,
-						brandId: data.brandId,
+						name: data.name, slug: data.slug, description: data.description,
+						price: data.price, stock: data.stock, imageUrl,
+						categoryId: data.categoryId, brandId: data.brandId,
 					},
 				})
 				.json<ApiResponse<AdminProduct>>();
 
-			if (!response.success) {
-				throw new Error(transformApiError(response));
-			}
-
+			if (!response.success) throw new Error(transformApiError(response));
 			return response.data;
 		},
 		onSuccess: () => {

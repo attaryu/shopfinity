@@ -20,6 +20,7 @@ type Props = Readonly<{
 		slug?: string;
 		logoUrl?: string;
 	}[];
+	onClose?: () => void;
 }>;
 
 export function FilterBarSelect({
@@ -27,6 +28,7 @@ export function FilterBarSelect({
 	triggerText,
 	items,
 	searchParamKey,
+	onClose,
 }: Props) {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [selected, setSelected] = useState<string | number | null>(() => {
@@ -71,6 +73,8 @@ export function FilterBarSelect({
 				{ preventScrollReset: true },
 			);
 		}
+
+		onClose?.();
 	}
 
 	return (

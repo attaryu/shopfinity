@@ -5,6 +5,8 @@ import ky, { HTTPError } from 'ky';
 import type { ApiResponse } from '~/shared/types/api-response';
 import { http } from '~/shared/utils/http';
 import { transformApiError } from '~/shared/utils/api-error';
+import { isApiAvailable } from '~/shared/utils/local-data';
+import { useAdminStore } from '../../store/admin-store';
 import type { AdminCategory } from '../../types/admin-types';
 
 export interface UpdateCategoryRequest {
@@ -20,20 +22,20 @@ export function useUpdateCategory() {
 
 	return useMutation({
 		mutationFn: async ({ id, data }: UpdateCategoryRequest) => {
-			const response = await http
-				.put(`categories/${id}`, {
-					json: data,
-				})
-				.json<ApiResponse<AdminCategory>>();
-
-			if (!response.success) {
-				throw new Error(transformApiError(response));
+			if (!isApiAvailable()) {
+				useAdminStore.getState().updateCategory(id, data);
+				return { id, ...data } as AdminCategory;
 			}
 
+			const response = await http
+				.put(`categories/${id}`, { json: data })
+				.json<ApiResponse<AdminCategory>>();
+
+			if (!response.success) throw new Error(transformApiError(response));
 			return response.data;
 		},
 		onSuccess: () => {
-			toast.success(`Category updated successfully`);
+			toast.success('Category updated successfully');
 			queryClient.invalidateQueries({ queryKey: ['categories'] });
 		},
 		onError: async (error: Error) => {
