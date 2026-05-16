@@ -17,7 +17,7 @@ CREATE TABLE orders (
   address           JSON NOT NULL,                      -- lihat Address type di bawah
   subtotal          INTEGER NOT NULL,                   -- dalam Rupiah
   shipping_cost     INTEGER NOT NULL,
-  tax               INTEGER NOT NULL,                   -- PPN 11%, dibulatkan ke atas
+  tax               INTEGER NOT NULL DEFAULT 0,
   total             INTEGER NOT NULL,
   shipping_method   JSON NOT NULL,                      -- lihat ShippingMethod type
   payment_method    JSON NOT NULL,                      -- lihat PaymentMethod type
@@ -80,8 +80,8 @@ Digunakan di kolom JSON pada tabel `orders`.
 ```json
 {
   "id": "string",
-  "type": "qris | bank_transfer | ewallet | card",
-  "name": "string",           // "Bank BCA", "GoPay", "QRIS", dll
+  "type": "qris | bank_transfer",
+  "name": "string",           // "Bank BCA", "QRIS", dll
   "accountNumber": "string | null",
   "accountName": "string | null"
 }
@@ -179,8 +179,7 @@ Auth: Bearer token (opsional — guest checkout diperbolehkan)
 
 **Perhitungan di backend (server-side validation):**
 ```
-tax = Math.ceil(subtotal * 0.11)    // PPN 11%
-total = subtotal + shippingMethod.cost + tax
+total = subtotal + shippingMethod.cost
 orderNumber = "INV/" + YYMMDD + "/" + random4digit
 status awal = "PENDING_PAYMENT"
 ```
@@ -200,8 +199,8 @@ status awal = "PENDING_PAYMENT"
     "items": [ ... ],
     "subtotal": 1200000,
     "shippingCost": 15000,
-    "tax": 132000,
-    "total": 1347000,
+    "tax": 0,
+    "total": 1215000,
     "shippingMethod": { ... },
     "paymentMethod": { ... },
     "status": "PENDING_PAYMENT",
@@ -333,7 +332,7 @@ Auth: Bearer token
 ## 5. Catatan
 
 - **Semua harga dalam Rupiah (integer)**, bukan desimal. `250000` = Rp 250.000.
-- **Tax PPN 11%** dihitung dari subtotal, dibulatkan ke atas (`Math.ceil`).
+- **Tax** selalu 0 (PPN tidak dikenakan).
 - **Order number format:** `INV/YYMMDD/XXXX` — YYMMDD dari `createdAt`, XXXX random 4 digit.
 - Guest checkout diperbolehkan (`customerEmail` bisa kosong).
 - Payment proof di-upload customer, lalu admin verifikasi manual via `/admin/payments`.
