@@ -416,10 +416,13 @@ Dokumen spesifikasi lengkap untuk backend developer. Mencakup:
   - `PUT /orders/:id/status` — Update status
   - `POST /orders/:id/payment-proof` — Upload bukti bayar
 - **Type reference:** Address, ShippingMethod, PaymentMethod, OrderItem, OrderStatus
-- **Perhitungan otomatis di backend:** tax (PPN 11%), orderNumber format, status awal
+- **Perhitungan otomatis di backend:** total = subtotal + shipping (tanpa tax), orderNumber format, status awal
+- **Metode pembayaran:** hanya QRIS dan 4 bank transfer (BCA, Mandiri, BNI, BRI)
 - **Checklist untuk backend developer**
 
 Yang TIDAK perlu diubah: Auth, Product CRUD, Category CRUD, Brand CRUD, Dashboard — semua sudah ada.
+
+> **Update 2026-05-16:** Spec disinkronkan dengan perubahan frontend — tax dihapus, PaymentMethod type disederhanakan (hapus ewallet & card).
 
 ---
 
@@ -536,6 +539,18 @@ Semua 7 halaman admin diverifikasi dan diperbaiki:
 - **order-management.tsx** — Table, filter, search, detail dialog, status update (tax row dihapus)
 - **payment-verification.tsx** — Pending orders, verify/reject, proof preview (status fix: PROCESSING → PAID)
 - **cash-flow.tsx** — Summary cards, revenue breakdown, transaction table (tax display dihapus)
+
+### 8.9 — BACKEND_SPEC.md Sync
+
+**File:** `BACKEND_SPEC.md`
+
+Disesuaikan dengan semua perubahan frontend:
+- Kolom `tax` di tabel orders: diubah dari `INTEGER NOT NULL, -- PPN 11%` menjadi `INTEGER NOT NULL DEFAULT 0,`
+- PaymentMethod type: `qris | bank_transfer | ewallet | card` → `qris | bank_transfer`
+- Perhitungan backend: baris `tax = Math.ceil(subtotal * 0.11)` dihapus, formula total tanpa tax
+- Response contoh: `"tax": 132000` → `"tax": 0`, `"total": 1347000` → `"total": 1215000`
+- Catatan: "Tax PPN 11% dihitung dari subtotal" → "Tax selalu 0 (PPN tidak dikenakan)"
+- Referensi "GoPay" dihapus dari komentar PaymentMethod
 
 ---
 
@@ -683,6 +698,7 @@ Semua 7 halaman admin diverifikasi dan diperbaiki:
 - PPN 11% tax removed from all calculations
 - Google Sheets integration removed
 - Demo login removed from login page
+- BACKEND_SPEC.md synced with latest frontend changes (tax, payment types)
 
 **Fixed:**
 - Infinite loop crash ("Maximum update depth exceeded") on cart button
