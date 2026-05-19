@@ -46,7 +46,6 @@ const managementItems = [
 
 const orderItems = [
 	{ title: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
-	{ title: 'Payment Verification', icon: CheckCircle, href: '/admin/payments' },
 	{ title: 'Cash Flow', icon: Banknote, href: '/admin/cash-flow' },
 ];
 
@@ -69,10 +68,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 	});
 
 	return (
-		<Sidebar
-			collapsible="icon"
-			className="border-r border-zinc-200"
-		>
+		<Sidebar collapsible="icon" className="border-r border-zinc-200">
 			{/* Header - Logo */}
 			<SidebarHeader className={isCollapsed ? 'p-2' : 'p-4'}>
 				<SidebarMenu>
@@ -88,8 +84,12 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 									<ShoppingBag className="size-4" />
 								</div>
 								<div className="flex flex-col leading-tight overflow-hidden">
-									<span className="text-sm font-bold tracking-tight truncate">Shopfinity</span>
-									<span className="text-xs text-muted-foreground truncate">Admin Panel</span>
+									<span className="text-sm font-bold tracking-tight truncate">
+										Shopfinity
+									</span>
+									<span className="text-xs text-muted-foreground truncate">
+										Admin Panel
+									</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
@@ -171,7 +171,10 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 						<SidebarMenu>
 							<SidebarMenuItem>
 								<SidebarMenuButton asChild tooltip="Back to Store">
-									<Link to="/" className="text-muted-foreground hover:text-foreground">
+									<Link
+										to="/"
+										className="text-muted-foreground hover:text-foreground"
+									>
 										<Store className="size-4 shrink-0" />
 										<span className="truncate">Back to Store</span>
 									</Link>

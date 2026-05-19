@@ -1,8 +1,8 @@
 import {
-  type RouteConfig,
-  index,
-  layout,
-  route,
+	type RouteConfig,
+	index,
+	layout,
+	route,
 } from '@react-router/dev/routes';
 
 export default [
@@ -28,7 +28,6 @@ export default [
 		route('admin/brands', 'features/admin/pages/brand-management.tsx'),
 		route('admin/orders', 'features/admin/pages/order-management.tsx'),
 		route('admin/orders/:id', 'features/admin/pages/order-detail-admin.tsx'),
-		route('admin/payments', 'features/admin/pages/payment-verification.tsx'),
 		route('admin/cash-flow', 'features/admin/pages/cash-flow.tsx'),
 	]),
 ] satisfies RouteConfig;
