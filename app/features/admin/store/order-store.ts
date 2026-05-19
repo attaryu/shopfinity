@@ -51,6 +51,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 			shippingMethod,
 			paymentMethod,
 			status: 'PENDING_PAYMENT',
+			paymentProofUrl: null,
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 		};

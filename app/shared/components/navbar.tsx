@@ -95,28 +95,28 @@ export function Navbar() {
 
 					{/* Right actions */}
 					<div className="flex items-center gap-1 ml-auto">
-						{/* Desktop cart */}
-						<Link
-							to="/cart"
-							className="hidden md:flex relative items-center justify-center size-10 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all duration-200"
-						>
-							<ShoppingCart
-								className={`size-[18px] transition-transform duration-300 ${
-									cartBump ? 'scale-125' : ''
-								}`}
-							/>
-							{cartCount > 0 && (
-								<span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 bg-zinc-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
-									{cartCount > 99 ? '99+' : cartCount}
-								</span>
-							)}
-						</Link>
-
 						{/* Desktop auth */}
 						{user.data ? (
 							<div className="hidden md:flex items-center gap-2">
+								{/* Desktop cart */}
 								<Link
-									to={user.data.role === 'ADMIN' ? '/admin/orders' : '/cart'}
+									to="/cart"
+									className="hidden md:flex relative items-center justify-center size-10 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all duration-200"
+								>
+									<ShoppingCart
+										className={`size-[18px] transition-transform duration-300 ${
+											cartBump ? 'scale-125' : ''
+										}`}
+									/>
+									{cartCount > 0 && (
+										<span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 bg-zinc-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+											{cartCount > 99 ? '99+' : cartCount}
+										</span>
+									)}
+								</Link>
+
+								<Link
+									to={user.data.role === 'ADMIN' ? '/admin/orders' : '/orders'}
 									className="relative size-10 rounded-xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all duration-200"
 									title="Orders"
 								>

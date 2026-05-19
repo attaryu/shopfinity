@@ -1,18 +1,43 @@
 import { Link, useNavigate } from 'react-router';
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '~/shared/components/shadcn/ui/button';
 import { Separator } from '~/shared/components/shadcn/ui/separator';
 import { MediaStorage } from '~/shared/lib/media-storage';
-import { useCart, useCartTotal } from '../hooks/use-cart';
-import { useCartStore } from '../store/cart-store';
+import { useUser } from '~/features/auth/hooks/api/use-user';
+import {
+	useCartQuery,
+	useUpdateCartItemMutation,
+	useRemoveFromCartMutation,
+	useClearCartMutation,
+	useCartTotal,
+} from '../hooks/use-cart';
+import { useEffect } from 'react';
 
 export default function CartPage() {
-	const items = useCart();
-	const total = useCartTotal();
-	const updateQuantity = useCartStore((s) => s.updateQuantity);
-	const removeItem = useCartStore((s) => s.removeItem);
-	const clearCart = useCartStore((s) => s.clearCart);
 	const navigate = useNavigate();
+	const { data: user, isLoading: isUserLoading } = useUser();
+	const { data: cart, isLoading: isCartLoading } = useCartQuery();
+	
+	const updateQuantityMutation = useUpdateCartItemMutation();
+	const removeItemMutation = useRemoveFromCartMutation();
+	const clearCartMutation = useClearCartMutation();
+	const total = useCartTotal();
+
+	useEffect(() => {
+		if (!isUserLoading && !user) {
+			navigate('/login');
+		}
+	}, [user, isUserLoading, navigate]);
+
+	if (isUserLoading || (user && isCartLoading)) {
+		return (
+			<div className="min-h-[80vh] flex items-center justify-center">
+				<Loader2 className="size-8 animate-spin text-zinc-400" />
+			</div>
+		);
+	}
+
+	const items = cart?.items || [];
 
 	if (items.length === 0) {
 		return (
@@ -60,9 +85,10 @@ export default function CartPage() {
 						variant="ghost"
 						size="sm"
 						className="text-red-500 hover:text-red-600 hover:bg-red-50"
-						onClick={clearCart}
+						onClick={() => clearCartMutation.mutate()}
+						disabled={clearCartMutation.isPending}
 					>
-						Clear Cart
+						{clearCartMutation.isPending ? 'Clearing...' : 'Clear Cart'}
 					</Button>
 				</div>
 
@@ -71,29 +97,29 @@ export default function CartPage() {
 					<ul className="flex-1 space-y-4">
 						{items.map((item) => (
 							<li
-								key={item.productId}
+								key={item.id}
 								className="flex gap-4 p-4 bg-white rounded-xl border border-zinc-200"
 							>
 								<Link
-									to={`/product/${item.slug}`}
+									to={`/product/${item.product.slug}`}
 									className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-lg bg-zinc-100 overflow-hidden"
 								>
 									<img
-										src={MediaStorage.getUrl(item.imageUrl)}
-										alt={item.name}
+										src={MediaStorage.getUrl(item.product.imageUrl)}
+										alt={item.product.name}
 										className="w-full h-full object-cover"
 									/>
 								</Link>
 
 								<div className="flex-1 min-w-0">
 									<Link
-										to={`/product/${item.slug}`}
+										to={`/product/${item.product.slug}`}
 										className="font-semibold text-zinc-900 hover:underline line-clamp-1"
 									>
-										{item.name}
+										{item.product.name}
 									</Link>
 									<p className="text-xs text-zinc-500 mt-0.5">
-										{item.brandName} &middot; {item.categoryName}
+										{item.product.brand.name} &middot; {item.product.category.name}
 									</p>
 
 									<div className="flex items-center justify-between mt-3">
@@ -102,11 +128,12 @@ export default function CartPage() {
 												variant="outline"
 												size="icon"
 												className="size-8"
+												disabled={updateQuantityMutation.isPending || item.quantity <= 1}
 												onClick={() =>
-													updateQuantity(
-														item.productId,
-														item.quantity - 1,
-													)
+													updateQuantityMutation.mutate({
+														id: item.id,
+														quantity: item.quantity - 1,
+													})
 												}
 											>
 												<Minus className="size-3" />
@@ -118,11 +145,12 @@ export default function CartPage() {
 												variant="outline"
 												size="icon"
 												className="size-8"
+												disabled={updateQuantityMutation.isPending}
 												onClick={() =>
-													updateQuantity(
-														item.productId,
-														item.quantity + 1,
-													)
+													updateQuantityMutation.mutate({
+														id: item.id,
+														quantity: item.quantity + 1,
+													})
 												}
 											>
 												<Plus className="size-3" />
@@ -132,7 +160,7 @@ export default function CartPage() {
 										<div className="flex items-center gap-3">
 											<p className="font-bold text-zinc-900 text-sm sm:text-base">
 												Rp{' '}
-												{(item.price * item.quantity).toLocaleString(
+												{(item.product.price * item.quantity).toLocaleString(
 													'id',
 												)}
 											</p>
@@ -140,7 +168,8 @@ export default function CartPage() {
 												variant="ghost"
 												size="icon"
 												className="size-8 text-zinc-400 hover:text-red-500"
-												onClick={() => removeItem(item.productId)}
+												disabled={removeItemMutation.isPending}
+												onClick={() => removeItemMutation.mutate(item.id)}
 											>
 												<Trash2 className="size-4" />
 											</Button>
@@ -179,7 +208,7 @@ export default function CartPage() {
 							</div>
 
 							<Button
-								className="w-full mt-6 h-12 text-base rounded-xl font-bold"
+								className="w-full mt-6 h-12 text-base rounded-xl font-bold bg-zinc-900 hover:bg-zinc-800"
 								onClick={() => navigate('/checkout')}
 							>
 								Proceed to Checkout

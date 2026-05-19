@@ -1,32 +1,25 @@
-import { useRef, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import {
 	Check,
 	ChevronLeft,
 	ChevronRight,
-	Download,
+	Loader2,
 	QrCode,
 	ShoppingBag,
-	Upload,
-	X,
 } from 'lucide-react';
 import { Button } from '~/shared/components/shadcn/ui/button';
 import { Input } from '~/shared/components/shadcn/ui/input';
 import { Label } from '~/shared/components/shadcn/ui/label';
 import { Separator } from '~/shared/components/shadcn/ui/separator';
 import { Textarea } from '~/shared/components/shadcn/ui/textarea';
-import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-} from '~/shared/components/shadcn/ui/dialog';
-import { useCart, useCartTotal } from '~/features/cart/hooks/use-cart';
-import { useCartStore } from '~/features/cart/store/cart-store';
-import { useOrderStore } from '~/features/admin/store/order-store';
+import { useUser } from '~/features/auth/hooks/api/use-user';
+import { useCartQuery, useCartTotal, useClearCartMutation } from '~/features/cart/hooks/use-cart';
 import { useCheckoutStore } from '../store/checkout-store';
-import { getCities, getShippingMethods } from '../data/shipping-methods';
+import { getShippingMethods, getCities } from '../data/shipping-methods';
 import { getPaymentMethods } from '../data/payment-methods';
+import { useCreateOrder } from '../hooks/api/use-create-order';
 import type { Address, ShippingMethod, PaymentMethod } from '../types/checkout-types';
 
 const steps = [
@@ -45,10 +38,20 @@ const PROVINCES = [
 ];
 
 export default function CheckoutPage() {
-	const items = useCart();
+	const { data: cart } = useCartQuery();
+	const items = cart?.items || [];
 	const cartTotal = useCartTotal();
-	const clearCart = useCartStore((s) => s.clearCart);
+	const clearCartMutation = useClearCartMutation();
 	const navigate = useNavigate();
+	const user = useUser();
+	const createOrder = useCreateOrder();
+
+	// Redirect guest
+	useEffect(() => {
+		if (!user.isLoading && !user.data) {
+			navigate('/login');
+		}
+	}, [user.isLoading, user.data, navigate]);
 
 	const {
 		step,
@@ -62,8 +65,6 @@ export default function CheckoutPage() {
 		reset: resetCheckout,
 	} = useCheckoutStore();
 
-	const placeOrder = useOrderStore((s) => s.placeOrder);
-
 	const [selectedShipping, setSelectedShipping] = useState<ShippingMethod | null>(
 		shippingMethod,
 	);
@@ -71,17 +72,19 @@ export default function CheckoutPage() {
 		paymentMethod,
 	);
 	const [selectedCity, setSelectedCity] = useState(address?.city || '');
-	const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
-	const [proofPreview, setProofPreview] = useState<string | null>(null);
-	const [qrisDialogOpen, setQrisDialogOpen] = useState(false);
-	const [missingProof, setMissingProof] = useState(false);
-	const proofSectionRef = useRef<HTMLDivElement>(null);
+	const [customerEmail, setCustomerEmail] = useState('');
 
-	const shippingOptions = selectedCity
-		? getShippingMethods(selectedCity)
-		: [];
+	const shippingOptions = selectedCity ? getShippingMethods(selectedCity) : [];
 	const paymentOptions = getPaymentMethods();
 	const cities = getCities();
+
+	if (user.isLoading || !user.data) {
+		return (
+			<main className="min-h-[70vh] flex items-center justify-center">
+				<Loader2 className="size-8 animate-spin text-zinc-400" />
+			</main>
+		);
+	}
 
 	if (items.length === 0 && step === 'address') {
 		return (
@@ -121,70 +124,39 @@ export default function CheckoutPage() {
 		setPaymentMethod(selectedPayment);
 	}
 
-	function handleProofUpload(e: React.ChangeEvent<HTMLInputElement>) {
-		const file = e.target.files?.[0];
-		if (file) {
-			setPaymentProofFile(file);
-			setProofPreview(URL.createObjectURL(file));
-			setMissingProof(false);
-		}
-	}
-
-	function clearProof() {
-		setPaymentProofFile(null);
-		if (proofPreview) URL.revokeObjectURL(proofPreview);
-		setProofPreview(null);
-	}
-
-	function handlePlaceOrder() {
+	async function handlePlaceOrder() {
 		if (!address || !shippingMethod || !paymentMethod) return;
 
-		if (!proofPreview && !paymentProofFile) {
-			setMissingProof(true);
-			toast.error('Please upload your payment proof first', {
-				description: 'Payment proof is required to complete your order.',
+		const subtotal = cartTotal;
+
+		try {
+			const order = await createOrder.mutateAsync({
+				customerName: address.fullName,
+				customerEmail: customerEmail || undefined,
+				address,
+				items: items.map((i) => ({
+					productId: i.productId,
+					name: i.product.name,
+					price: i.product.price,
+					quantity: i.quantity,
+					imageUrl: i.product.imageUrl || null,
+				})),
+				subtotal,
+				shippingMethod,
+				paymentMethod,
 			});
-			proofSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			return;
+
+			clearCartMutation.mutate();
+			resetCheckout();
+
+			toast.success('Order berhasil dibuat!', {
+				description: `Order #${order.orderNumber} telah dibuat. Silakan lakukan pembayaran.`,
+			});
+
+			navigate(`/orders/${order.id}`);
+		} catch {
+			// Error handled by the hook's onError
 		}
-
-		const order = placeOrder({
-			items: items.map((i) => ({
-				productId: i.productId,
-				name: i.name,
-				price: i.price,
-				quantity: i.quantity,
-				imageUrl: i.imageUrl,
-			})),
-			subtotal: cartTotal,
-			shippingMethod,
-			paymentMethod,
-			address,
-			customerName: address.fullName,
-			customerEmail: '',
-		});
-
-		if (proofPreview) {
-			useOrderStore.getState().setPaymentProof(order.id, proofPreview);
-		}
-
-		clearCart();
-		resetCheckout();
-
-		toast.success('Order placed successfully!', {
-			description: `Your order #${order.orderNumber} has been placed. Please complete payment.`,
-		});
-
-		navigate(`/checkout/success?order=${order.id}`);
-	}
-
-	function handleDownloadQR() {
-		const link = document.createElement('a');
-		link.href = '/images/qris.png';
-		link.download = 'qris-shopfinity.png';
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
 	}
 
 	const currentStepIndex = steps.findIndex((s) => s.key === step);
@@ -257,6 +229,17 @@ export default function CheckoutPage() {
 									placeholder="08123456789"
 								/>
 							</div>
+						</div>
+
+						<div className="space-y-1.5">
+							<Label htmlFor="email">Email (opsional)</Label>
+							<Input
+								id="email"
+								type="email"
+								value={customerEmail}
+								onChange={(e) => setCustomerEmail(e.target.value)}
+								placeholder="email@example.com"
+							/>
 						</div>
 
 						<div className="space-y-1.5">
@@ -450,7 +433,7 @@ export default function CheckoutPage() {
 										</div>
 									</div>
 									<span className="text-xs font-medium text-zinc-400 uppercase">
-										{opt.type === 'qris' ? 'QRIS' : 'Bank'}
+										{opt.type === 'qris' ? <QrCode className="size-4" /> : 'Bank'}
 									</span>
 								</label>
 							))}
@@ -507,10 +490,10 @@ export default function CheckoutPage() {
 									className="flex justify-between items-center text-sm"
 								>
 									<span className="text-zinc-600">
-										{item.name} x{item.quantity}
+										{item.product.name} x{item.quantity}
 									</span>
 									<span className="font-medium text-zinc-900">
-										Rp {(item.price * item.quantity).toLocaleString('id')}
+										Rp {(item.product.price * item.quantity).toLocaleString('id')}
 									</span>
 								</div>
 							))}
@@ -539,233 +522,34 @@ export default function CheckoutPage() {
 							</div>
 						</div>
 
-						{/* QRIS Payment Instructions */}
-						{paymentMethod?.type === 'qris' && (
-							<div className="bg-white border-2 border-zinc-200 rounded-2xl p-5 sm:p-6 space-y-5">
-								<div className="flex items-center gap-2.5">
-									<div className="size-10 rounded-xl bg-zinc-900 flex items-center justify-center">
-										<QrCode className="size-5 text-white" />
-									</div>
-									<div>
-										<h3 className="font-bold text-zinc-900 text-lg">
-											QRIS Payment
-										</h3>
-										<p className="text-xs text-zinc-500">
-											Scan menggunakan e-wallet atau mobile banking
-										</p>
-									</div>
-								</div>
-
-								<ol className="space-y-3 text-sm text-zinc-700">
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-600">1</span>
-										<span>Buka aplikasi <strong>e-wallet</strong> (GoPay, OVO, DANA, ShopeePay) atau <strong>mobile banking</strong> yang mendukung QRIS.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-600">2</span>
-										<span>Pilih menu <strong>Scan QR</strong> atau <strong>Bayar</strong>.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-600">3</span>
-										<span>Scan QR code di bawah ini.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-600">4</span>
-										<span>Verifikasi nominal pembayaran: <strong>Rp {grandTotal.toLocaleString('id')}</strong>.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-zinc-100 flex items-center justify-center text-xs font-bold text-zinc-600">5</span>
-										<span>Konfirmasi pembayaran dan <strong>simpan bukti pembayaran</strong>.</span>
-									</li>
-								</ol>
-
-								<div className="flex flex-col items-center gap-3 pt-2">
-									<button
-										type="button"
-										onClick={() => setQrisDialogOpen(true)}
-										className="cursor-pointer group"
-									>
-										<img
-											src="/images/qris.png"
-											alt="QRIS QR Code"
-											className="w-48 h-48 sm:w-56 sm:h-56 rounded-xl border-2 border-zinc-200 group-hover:border-zinc-400 transition-colors"
-										/>
-										<p className="text-xs text-zinc-400 mt-1.5 group-hover:text-zinc-600 transition-colors">
-											Click to enlarge
-										</p>
-									</button>
-
-									<Button
-										variant="outline"
-										size="sm"
-										className="gap-2"
-										onClick={handleDownloadQR}
-									>
-										<Download className="size-4" />
-										Download QR
-									</Button>
-								</div>
-
-								{/* QR Enlarge Dialog */}
-								<Dialog open={qrisDialogOpen} onOpenChange={setQrisDialogOpen}>
-									<DialogContent className="sm:max-w-md p-6">
-										<DialogTitle className="text-center">
-											Scan QRIS
-										</DialogTitle>
-										<div className="flex flex-col items-center gap-4">
-											<img
-												src="/images/qris.png"
-												alt="QRIS QR Code"
-												className="w-full max-w-xs rounded-xl"
-											/>
-											<p className="text-sm text-zinc-500 text-center">
-												Scan menggunakan e-wallet atau mobile banking Anda
-											</p>
-											<Button
-												variant="outline"
-												size="sm"
-												className="gap-2"
-												onClick={handleDownloadQR}
-											>
-												<Download className="size-4" />
-												Download QR
-											</Button>
-										</div>
-									</DialogContent>
-								</Dialog>
-							</div>
-						)}
-
-						{/* Bank Transfer Instructions */}
-						{paymentMethod?.type === 'bank_transfer' && (
-							<div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 sm:p-6 space-y-4">
-								<div className="flex items-center gap-2.5">
-									<div className="size-10 rounded-xl bg-blue-600 flex items-center justify-center">
-										<svg className="size-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-										</svg>
-									</div>
-									<div>
-										<h3 className="font-bold text-blue-900 text-lg">
-											{paymentMethod.name} Transfer
-										</h3>
-										<p className="text-xs text-blue-600">
-											Transfer antar bank atau sesama bank
-										</p>
-									</div>
-								</div>
-
-								<ol className="space-y-3 text-sm text-blue-800">
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700">1</span>
-										<span>Buka aplikasi <strong>mobile banking</strong> atau kunjungi <strong>ATM</strong> terdekat.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700">2</span>
-										<span>Pilih menu <strong>Transfer</strong> &rarr; masukkan nomor rekening tujuan.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700">3</span>
-										<span>Masukkan nominal transfer: <strong>Rp {grandTotal.toLocaleString('id')}</strong>.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700">4</span>
-										<span>Periksa kembali detail dan <strong>konfirmasi pembayaran</strong>.</span>
-									</li>
-									<li className="flex gap-3">
-										<span className="flex-shrink-0 size-6 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700">5</span>
-										<span>
-											<strong>Simpan bukti transfer</strong> dan unggah di bawah ini.
-										</span>
-									</li>
-								</ol>
-
-								<div className="bg-white rounded-xl p-4 border border-blue-200">
-									<p className="text-sm font-semibold text-blue-900 mb-2">
-										Rekening Tujuan
+						{/* Payment method summary */}
+						{paymentMethod && (
+							<div className="bg-zinc-50 rounded-xl p-5">
+								<h3 className="font-semibold text-zinc-900 mb-2">Payment Method</h3>
+								<p className="text-sm text-zinc-700 font-medium">{paymentMethod.name}</p>
+								{paymentMethod.accountNumber && (
+									<p className="text-sm text-zinc-500 mt-1">
+										No. Rek: <span className="font-mono font-semibold">{paymentMethod.accountNumber}</span>{' '}
+										a.n. {paymentMethod.accountName}
 									</p>
-									<div className="space-y-1.5 text-sm">
-										<div className="flex justify-between">
-											<span className="text-blue-600">Bank</span>
-											<span className="font-medium text-blue-900">{paymentMethod.name}</span>
-										</div>
-										<div className="flex justify-between">
-											<span className="text-blue-600">No. Rekening</span>
-											<span className="font-bold text-blue-900 font-mono">{paymentMethod.accountNumber}</span>
-										</div>
-										<div className="flex justify-between">
-											<span className="text-blue-600">Atas Nama</span>
-											<span className="font-medium text-blue-900">{paymentMethod.accountName}</span>
-										</div>
-									</div>
-								</div>
+								)}
+								{paymentMethod.type === 'qris' && (
+									<p className="text-sm text-zinc-500 mt-1">
+										Scan QR menggunakan e-wallet atau mobile banking
+									</p>
+								)}
+								<p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-3 mt-3 border border-amber-200">
+									💡 Setelah order dibuat, Anda dapat mengupload bukti pembayaran di halaman detail order.
+								</p>
 							</div>
 						)}
-
-						{/* Payment proof upload */}
-						<div ref={proofSectionRef} className="space-y-3">
-							<div className="flex items-center justify-between">
-								<h3 className="font-semibold text-zinc-900">
-									Upload Payment Proof *
-								</h3>
-								{proofPreview && (
-									<Button
-										variant="ghost"
-										size="sm"
-										className="text-xs text-zinc-500 hover:text-red-500"
-										onClick={clearProof}
-									>
-										<X className="size-3 mr-1" />
-										Remove
-									</Button>
-								)}
-							</div>
-							<div
-								className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
-									missingProof
-										? 'border-red-300 bg-red-50'
-										: 'border-zinc-300 hover:border-zinc-400'
-								}`}
-							>
-								<input
-									type="file"
-									id="paymentProof"
-									accept="image/*"
-									className="hidden"
-									onChange={handleProofUpload}
-								/>
-								<label
-									htmlFor="paymentProof"
-									className="cursor-pointer flex flex-col items-center gap-2"
-								>
-									{proofPreview ? (
-										<img
-											src={proofPreview}
-											alt="Payment proof preview"
-											className="max-h-48 rounded-lg object-contain"
-										/>
-									) : (
-										<>
-											<Upload className={`size-8 ${missingProof ? 'text-red-400' : 'text-zinc-400'}`} />
-											<p className={`text-sm ${missingProof ? 'text-red-500 font-medium' : 'text-zinc-500'}`}>
-												{missingProof
-													? 'Please upload your payment proof!'
-													: 'Click to upload payment receipt'}
-											</p>
-											<p className="text-xs text-zinc-400">
-												JPG, PNG (max 5MB)
-											</p>
-										</>
-									)}
-								</label>
-							</div>
-						</div>
 
 						<div className="flex gap-3">
 							<Button
 								variant="outline"
 								className="flex-1 h-12 rounded-xl gap-2"
 								onClick={() => setStep('payment')}
+								disabled={createOrder.isPending}
 							>
 								<ChevronLeft className="size-4" />
 								Back
@@ -773,9 +557,19 @@ export default function CheckoutPage() {
 							<Button
 								className="flex-1 h-12 rounded-xl gap-2 bg-green-600 hover:bg-green-700"
 								onClick={handlePlaceOrder}
+								disabled={createOrder.isPending}
 							>
-								<Check className="size-4" />
-								Place Order
+								{createOrder.isPending ? (
+									<>
+										<Loader2 className="size-4 animate-spin" />
+										Memproses...
+									</>
+								) : (
+									<>
+										<Check className="size-4" />
+										Place Order
+									</>
+								)}
 							</Button>
 						</div>
 					</div>

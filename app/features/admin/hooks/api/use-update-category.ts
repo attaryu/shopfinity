@@ -23,8 +23,8 @@ export function useUpdateCategory() {
 	return useMutation({
 		mutationFn: async ({ id, data }: UpdateCategoryRequest) => {
 			if (!isApiAvailable()) {
-				useAdminStore.getState().updateCategory(id, data);
-				return { id, ...data } as AdminCategory;
+				useAdminStore.getState().updateCategory(id, { name: data.name, slug: data.slug || '' });
+				return { id, name: data.name, slug: data.slug || '' } as AdminCategory;
 			}
 
 			const response = await http

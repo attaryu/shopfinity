@@ -20,7 +20,10 @@ export function useCreateCategory() {
 	return useMutation({
 		mutationFn: async (data: CreateCategoryRequest) => {
 			if (!isApiAvailable()) {
-				const entry = useAdminStore.getState().addCategory(data);
+				const entry = useAdminStore.getState().addCategory({
+					name: data.name,
+					slug: data.slug || '',
+				});
 				return entry as AdminCategory;
 			}
 

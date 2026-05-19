@@ -3,15 +3,16 @@ import { toast } from 'sonner';
 import { Button } from '~/shared/components/shadcn/ui/button';
 import { Skeleton } from '~/shared/components/shadcn/ui/skeleton';
 import { MediaStorage } from '~/shared/lib/media-storage';
-import { useCartStore } from '~/features/cart/store/cart-store';
+import { useAddToCartMutation } from '~/features/cart/hooks/use-cart';
 import { getSession } from '~/shared/utils/session-management';
 import { useGetProduct } from '../hooks/api/use-get-product';
 import type { Route } from './+types/product-detail';
+import { Loader2 } from 'lucide-react';
 
 export default function ProductDetail({ params }: Route.ComponentProps) {
 	const { idOrSlug } = params;
 	const { data: product, isLoading, isError, error } = useGetProduct(idOrSlug);
-	const addItem = useCartStore((s) => s.addItem);
+	const { mutate: addToCart, isPending: isAddingToCart } = useAddToCartMutation();
 	const navigate = useNavigate();
 
 	function requireAuth() {
@@ -30,42 +31,48 @@ export default function ProductDetail({ params }: Route.ComponentProps) {
 	}
 
 	function handleAddToCart() {
-		if (!product || !requireAuth()) return;
+		if (!product || !requireAuth() || isAddingToCart) return;
 
-		addItem({
-			productId: product.id,
-			slug: product.slug,
-			name: product.name,
-			price: product.price,
-			imageUrl: product.imageUrl,
-			brandName: product.brand.name,
-			categoryName: product.category.name,
-		});
-
-		toast.success('Added to cart', {
-			description: `${product.name} has been added to your cart.`,
-			action: {
-				label: 'View Cart',
-				onClick: () => navigate('/cart'),
+		addToCart(
+			{
+				productId: product.id,
+				quantity: 1,
 			},
-			duration: 4000,
-		});
+			{
+				onSuccess: () => {
+					toast.success('Added to cart', {
+						description: `${product.name} has been added to your cart.`,
+						action: {
+							label: 'View Cart',
+							onClick: () => navigate('/cart'),
+						},
+						duration: 4000,
+					});
+				},
+				onError: () => {
+					toast.error('Failed to add to cart', {
+						description: 'An error occurred while adding the product to your cart.',
+						duration: 4000,
+					});
+				},
+			}
+		);
 	}
 
 	function handleBuyNow() {
-		if (!product || !requireAuth()) return;
+		if (!product || !requireAuth() || isAddingToCart) return;
 
-		addItem({
-			productId: product.id,
-			slug: product.slug,
-			name: product.name,
-			price: product.price,
-			imageUrl: product.imageUrl,
-			brandName: product.brand.name,
-			categoryName: product.category.name,
-		});
-
-		navigate('/cart');
+		addToCart(
+			{
+				productId: product.id,
+				quantity: 1,
+			},
+			{
+				onSuccess: () => {
+					navigate('/cart');
+				},
+			}
+		);
 	}
 
 	if (isLoading) {

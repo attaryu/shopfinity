@@ -1,10 +1,14 @@
+import type { ClientProduct } from '../../product/types/product-types';
+
 export interface CartItem {
+	id: string;
 	productId: string;
-	slug: string;
-	name: string;
-	price: number;
-	imageUrl: string;
 	quantity: number;
-	brandName: string;
-	categoryName: string;
+	product: ClientProduct;
+}
+
+export interface Cart {
+	id: string;
+	userId: string;
+	items: CartItem[];
 }

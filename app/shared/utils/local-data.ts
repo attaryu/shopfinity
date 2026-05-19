@@ -202,7 +202,10 @@ export function getLocalAdminProducts(params: {
 
 	return {
 		success: true,
+		statusCode: 200,
+		message: 'OK',
 		data: { products, meta: { totalItems, totalPages, page, limit } },
+		error: null,
 	};
 }
 
@@ -210,7 +213,7 @@ export function getLocalAdminCategories(params: {
 	page?: number;
 	limit?: number;
 	search?: string;
-}): ApiResponse<{ categories: SeedCategory[]; meta: { totalItems: number; totalPages: number; page: number; limit: number } }> {
+}): ApiResponse<{ categories: (SeedCategory & { productCount?: number })[]; meta: { totalItems: number; totalPages: number; page: number; limit: number } }> {
 	let filtered = [...seedCategories];
 
 	if (params.search) {
@@ -227,7 +230,10 @@ export function getLocalAdminCategories(params: {
 
 	return {
 		success: true,
+		statusCode: 200,
+		message: 'OK',
 		data: { categories: paged, meta: { totalItems, totalPages, page, limit } },
+		error: null,
 	};
 }
 
@@ -235,7 +241,7 @@ export function getLocalAdminBrands(params: {
 	page?: number;
 	limit?: number;
 	search?: string;
-}): ApiResponse<{ brands: SeedBrand[]; meta: { totalItems: number; totalPages: number; page: number; limit: number } }> {
+}): ApiResponse<{ brands: (SeedBrand & { productCount?: number })[]; meta: { totalItems: number; totalPages: number; page: number; limit: number } }> {
 	let filtered = [...seedBrands];
 
 	if (params.search) {
@@ -252,7 +258,10 @@ export function getLocalAdminBrands(params: {
 
 	return {
 		success: true,
+		statusCode: 200,
+		message: 'OK',
 		data: { brands: paged, meta: { totalItems, totalPages, page, limit } },
+		error: null,
 	};
 }
 

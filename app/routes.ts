@@ -15,6 +15,8 @@ export default [
 		route('cart', 'features/cart/pages/cart.tsx'),
 		route('checkout', 'features/checkout/pages/checkout.tsx'),
 		route('checkout/success', 'features/checkout/pages/checkout-success.tsx'),
+		route('orders', 'features/checkout/pages/order-list.tsx'),
+		route('orders/:id', 'features/checkout/pages/order-detail.tsx'),
 		route('*', 'pages/not-found.tsx'),
 	]),
 
@@ -25,6 +27,7 @@ export default [
 		route('admin/categories', 'features/admin/pages/category-management.tsx'),
 		route('admin/brands', 'features/admin/pages/brand-management.tsx'),
 		route('admin/orders', 'features/admin/pages/order-management.tsx'),
+		route('admin/orders/:id', 'features/admin/pages/order-detail-admin.tsx'),
 		route('admin/payments', 'features/admin/pages/payment-verification.tsx'),
 		route('admin/cash-flow', 'features/admin/pages/cash-flow.tsx'),
 	]),

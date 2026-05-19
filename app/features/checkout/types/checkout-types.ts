@@ -17,10 +17,10 @@ export interface ShippingMethod {
 
 export interface PaymentMethod {
 	id: string;
-	type: 'qris' | 'bank_transfer' | 'ewallet' | 'card';
+	type: 'qris' | 'bank_transfer';
 	name: string;
-	accountNumber?: string;
-	accountName?: string;
+	accountNumber: string | null;
+	accountName: string | null;
 }
 
 export type CheckoutStep = 'address' | 'shipping' | 'payment' | 'confirmation';
@@ -34,11 +34,14 @@ export type OrderStatus =
 	| 'CANCELLED';
 
 export interface OrderItem {
+	id?: string;
+	orderId?: string;
 	productId: string;
+	productName?: string;
 	name: string;
 	price: number;
 	quantity: number;
-	imageUrl: string;
+	imageUrl: string | null;
 }
 
 export interface Order {
@@ -55,7 +58,32 @@ export interface Order {
 	shippingMethod: ShippingMethod;
 	paymentMethod: PaymentMethod;
 	status: OrderStatus;
-	paymentProofUrl?: string;
+	paymentProofUrl: string | null;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface CreateOrderPayload {
+	customerName: string;
+	customerEmail?: string;
+	address: Address;
+	items: Array<{
+		productId: string;
+		name: string;
+		price: number;
+		quantity: number;
+		imageUrl?: string | null;
+	}>;
+	subtotal: number;
+	shippingMethod: ShippingMethod;
+	paymentMethod: PaymentMethod;
+}
+
+export interface ListOrdersParams {
+	page?: number;
+	limit?: number;
+	status?: OrderStatus | '';
+	search?: string;
+	sortBy?: string;
+	sortOrder?: 'asc' | 'desc';
 }

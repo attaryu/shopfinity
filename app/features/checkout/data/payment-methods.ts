@@ -6,6 +6,8 @@ export function getPaymentMethods(): PaymentMethod[] {
 			id: 'qris',
 			type: 'qris',
 			name: 'QRIS',
+			accountNumber: null,
+			accountName: null,
 		},
 		{
 			id: 'bca',
