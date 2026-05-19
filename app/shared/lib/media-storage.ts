@@ -1,37 +1,36 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
 const supabaseBucket = import.meta.env.VITE_SUPABASE_BUCKET;
 
-/**
- * MediaStorage abstraction to handle file operations across different providers.
- * Currently supports Supabase, but designed to be extendable to S3 or other storage.
- */
+function requireSupabase() {
+	const client = getSupabase();
+	if (!client) {
+		throw new Error(
+			'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in your .env file.',
+		);
+	}
+	return client;
+}
+
 export const MediaStorage = {
-	/**
-	 * Resolves a storage path to a full public URL.
-	 * @param path The storage path (e.g., 'brand/logo.png')
-	 * @returns The full public URL
-	 */
 	getUrl(path: string | null | undefined): string {
 		if (!path) return '';
 		if (path.startsWith('http')) return path;
 
-		return supabase.storage.from(supabaseBucket).getPublicUrl(path).data
+		const client = getSupabase();
+		if (!client) return path;
+
+		return client.storage.from(supabaseBucket).getPublicUrl(path).data
 			.publicUrl;
 	},
 
-	/**
-	 * Performs a file upload using a presigned URL and token.
-	 * @param path The destination storage path
-	 * @param token The presigned upload token
-	 * @param file The file object to upload
-	 */
 	async uploadToSignedUrl(
 		path: string,
 		token: string,
 		file: File,
 	): Promise<void> {
-		const { error } = await supabase.storage
+		const client = requireSupabase();
+		const { error } = await client.storage
 			.from(supabaseBucket)
 			.uploadToSignedUrl(path, token, file);
 

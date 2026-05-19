@@ -64,8 +64,8 @@ export default function Login() {
 		<>
 			<title>Login - Shopfinity</title>
 
-			<main className="grid grid-cols-2 grid-rows-1 h-[85vh] mx-52 mt-2 mb-14 rounded-xl overflow-hidden">
-				<div className="w-full h-full bg-zinc-900">
+			<main className="flex flex-col-reverse md:grid md:grid-cols-2 md:grid-rows-1 min-h-[85vh] mx-4 sm:mx-8 md:mx-14 lg:mx-52 mt-2 mb-14 rounded-xl overflow-hidden">
+				<div className="w-full h-48 sm:h-64 md:h-full bg-zinc-900">
 					<img
 						src="/images/login-image.jpg"
 						alt=""
@@ -73,11 +73,11 @@ export default function Login() {
 					/>
 				</div>
 
-				<div className="w-full h-full bg-zinc-100 p-14 flex flex-col justify-center">
-					<h1 className="text-3xl font-bold text-center">
+				<div className="w-full h-full bg-zinc-100 p-6 sm:p-10 md:p-14 flex flex-col justify-center">
+					<h1 className="text-2xl sm:text-3xl font-bold text-center">
 						Login to your account
 					</h1>
-					<p className=" mt-2 text-zinc-600 text-center">
+					<p className="mt-2 text-sm text-zinc-600 text-center">
 						Enter your credentials to access your account
 					</p>
 

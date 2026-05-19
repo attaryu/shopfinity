@@ -1,7 +1,6 @@
 import type { Route } from './+types/root';
 
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Wrench } from 'lucide-react';
 import {
 	isRouteErrorResponse,
 	Links,
@@ -15,12 +14,9 @@ import './app.css';
 
 import { userQueryOption } from './features/auth/hooks/api/use-user';
 import { Toaster } from './shared/components/shadcn/ui/sonner';
-import useResize from './shared/hooks/use-resize';
 import { queryClient } from './shared/utils/query-client';
 
 export default function Layout() {
-	const isSmall = useResize(900);
-
 	return (
 		<html lang="en">
 			<head>
@@ -30,20 +26,10 @@ export default function Layout() {
 				<Links />
 			</head>
 			<body>
-				{isSmall ? (
-					<main className="flex items-center justify-center flex-col h-screen">
-						<Wrench className="" size={70} />
-
-						<p className="text-center text-sm w-3/4">
-							Shopfinity tidak mendukung tampilan mobile :(
-						</p>
-					</main>
-				) : (
-					<QueryClientProvider client={queryClient}>
-						<Outlet />
-						<Toaster />
-					</QueryClientProvider>
-				)}
+				<QueryClientProvider client={queryClient}>
+					<Outlet />
+					<Toaster />
+				</QueryClientProvider>
 
 				<ScrollRestoration />
 				<Scripts />

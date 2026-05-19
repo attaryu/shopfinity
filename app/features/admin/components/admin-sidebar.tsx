@@ -1,5 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import {
+	Banknote,
+	CheckCircle,
 	ChevronUp,
 	Home,
 	Layers,
@@ -35,11 +37,17 @@ import type { User } from '~/shared/types/user';
 import { http } from '~/shared/utils/http';
 import { clearSession } from '~/shared/utils/session-management';
 
-const navItems = [
+const managementItems = [
 	{ title: 'Dashboard', icon: Home, href: '/admin' },
 	{ title: 'Products', icon: Package, href: '/admin/products' },
 	{ title: 'Categories', icon: Tags, href: '/admin/categories' },
 	{ title: 'Brands', icon: Layers, href: '/admin/brands' },
+];
+
+const orderItems = [
+	{ title: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
+	{ title: 'Payment Verification', icon: CheckCircle, href: '/admin/payments' },
+	{ title: 'Cash Flow', icon: Banknote, href: '/admin/cash-flow' },
 ];
 
 interface AdminSidebarProps {
@@ -99,11 +107,42 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{navItems.map((item) => {
+							{managementItems.map((item) => {
 								const isActive =
 									item.href === '/admin'
 										? location.pathname === '/admin'
 										: location.pathname.startsWith(item.href);
+
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton
+											asChild
+											isActive={isActive}
+											tooltip={item.title}
+											className="transition-all duration-200"
+										>
+											<Link to={item.href}>
+												<item.icon className="size-4 shrink-0" />
+												<span className="truncate">{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+
+				<SidebarSeparator />
+
+				<SidebarGroup>
+					<SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+						Orders & Finance
+					</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{orderItems.map((item) => {
+								const isActive = location.pathname.startsWith(item.href);
 
 								return (
 									<SidebarMenuItem key={item.title}>
