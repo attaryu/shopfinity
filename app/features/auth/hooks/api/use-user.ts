@@ -8,10 +8,17 @@ import type { ApiResponse } from '~/shared/types/api-response';
 import type { User } from '~/shared/types/user';
 import { http } from '~/shared/utils/http';
 import { getSession } from '~/shared/utils/session-management';
+import { queryClient } from '~/shared/utils/query-client';
+import { isApiAvailable } from '~/shared/utils/local-data';
 
 export const userQueryOption = {
 	queryKey: ['user'],
 	queryFn: async () => {
+		if (!isApiAvailable()) {
+			// Return cached user from localStorage session
+			return queryClient.getQueryData<User>(['user']) || null;
+		}
+
 		const response = await http
 			.get('users/me')
 			.json<ApiResponse<{ user: User }>>();
@@ -19,7 +26,7 @@ export const userQueryOption = {
 		return response.data?.user;
 	},
 	staleTime: Infinity,
-	gcTime: 1000 * 60 * 15, // 15 minutes
+	gcTime: 1000 * 60 * 15,
 };
 
 export function useUser() {

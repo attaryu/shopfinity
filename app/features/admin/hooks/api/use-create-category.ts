@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import ky, { HTTPError } from 'ky';
 
 import type { ApiResponse } from '~/shared/types/api-response';
 import { http } from '~/shared/utils/http';
 import { transformApiError } from '~/shared/utils/api-error';
+import { isApiAvailable } from '~/shared/utils/local-data';
+import { useAdminStore } from '../../store/admin-store';
 import type { AdminCategory } from '../../types/admin-types';
-import ky, { HTTPError } from 'ky';
 
 export interface CreateCategoryRequest {
 	name: string;
@@ -17,16 +19,19 @@ export function useCreateCategory() {
 
 	return useMutation({
 		mutationFn: async (data: CreateCategoryRequest) => {
-			const response = await http
-				.post('categories', {
-					json: data,
-				})
-				.json<ApiResponse<AdminCategory>>();
-
-			if (!response.success) {
-				throw new Error(transformApiError(response));
+			if (!isApiAvailable()) {
+				const entry = useAdminStore.getState().addCategory({
+					name: data.name,
+					slug: data.slug || '',
+				});
+				return entry as AdminCategory;
 			}
 
+			const response = await http
+				.post('categories', { json: data })
+				.json<ApiResponse<AdminCategory>>();
+
+			if (!response.success) throw new Error(transformApiError(response));
 			return response.data;
 		},
 		onSuccess: () => {

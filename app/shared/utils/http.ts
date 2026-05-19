@@ -5,6 +5,14 @@ import type { ApiResponse } from '../types/api-response';
 import type { User } from '../types/user';
 import { clearSession, getSession, setSession } from './session-management';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
+if (!import.meta.env.VITE_API_URL) {
+	console.warn(
+		'VITE_API_URL is not set. API calls will use relative URLs and may fail until configured.',
+	);
+}
+
 let isRefreshing = false;
 
 let failedQueue: Array<{
@@ -25,7 +33,7 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 export const http = ky.create({
-	prefixUrl: import.meta.env.VITE_API_URL + '/',
+	prefixUrl: API_URL ? API_URL + '/' : '',
 	credentials: 'include',
 	hooks: {
 		beforeRequest: [
@@ -59,7 +67,7 @@ export const http = ky.create({
 
 					try {
 						const { data } = await ky
-							.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+							.post(`${API_URL}/auth/refresh`, {
 								credentials: 'include',
 							})
 							.json<ApiResponse<{ accessToken: string; user: User }>>();
