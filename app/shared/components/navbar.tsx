@@ -15,21 +15,15 @@ import { useCartCount } from '~/features/cart/hooks/use-cart';
 import { http } from '../utils/http';
 import { clearSession } from '../utils/session-management';
 import { Button } from './shadcn/ui/button';
-import { Input } from './shadcn/ui/input';
+import { Separator } from './shadcn/ui/separator';
 import {
 	Sheet,
 	SheetClose,
 	SheetContent,
-	SheetTitle,
 	SheetTrigger,
 } from './shadcn/ui/sheet';
-import { Separator } from './shadcn/ui/separator';
 
-const mainLinks = [
-	{ label: 'Home', href: '/' },
-	{ label: 'New Arrivals', href: '/?sort=newest' },
-	{ label: 'Best Sellers', href: '/?sort=popular' },
-];
+const mainLinks = [{ label: 'Home', href: '/' }];
 
 export function Navbar() {
 	const user = useUser();
@@ -59,23 +53,12 @@ export function Navbar() {
 		},
 	});
 
-	function handleSearch(e: React.FormEvent) {
-		e.preventDefault();
-		if (searchValue.trim()) {
-			navigate(`/?search=${encodeURIComponent(searchValue.trim())}`);
-			setSearchValue('');
-		}
-	}
-
 	return (
 		<>
 			<nav className="sticky top-0 left-0 z-30 w-full bg-white border-b border-zinc-100">
 				<div className="mx-auto max-w-[1400px] flex items-center gap-4 px-4 sm:px-6 lg:px-8 h-16">
 					{/* Logo */}
-					<Link
-						to="/"
-						className="flex items-center gap-2.5 shrink-0 group"
-					>
+					<Link to="/" className="flex items-center gap-2.5 shrink-0 group">
 						<img
 							src="/logo/shopfinity-light.svg"
 							alt="Shopfinity"
@@ -110,35 +93,6 @@ export function Navbar() {
 						})}
 					</ul>
 
-					{/* Search bar */}
-					<form
-						onSubmit={handleSearch}
-						className="hidden sm:flex flex-1 max-w-sm"
-					>
-						<div className="relative w-full group">
-							<svg
-								className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400 transition-colors group-focus-within:text-zinc-600"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								/>
-							</svg>
-							<Input
-								type="text"
-								placeholder="Search products..."
-								value={searchValue}
-								onChange={(e) => setSearchValue(e.target.value)}
-								className="pl-10 pr-4 h-10 bg-zinc-100 border-transparent rounded-xl text-sm focus:bg-white focus:border-zinc-300 focus:ring-0 transition-all duration-200 placeholder:text-zinc-400"
-							/>
-						</div>
-					</form>
-
 					{/* Right actions */}
 					<div className="flex items-center gap-1 ml-auto">
 						{/* Desktop cart */}
@@ -162,11 +116,7 @@ export function Navbar() {
 						{user.data ? (
 							<div className="hidden md:flex items-center gap-2">
 								<Link
-									to={
-										user.data.role === 'ADMIN'
-											? '/admin/orders'
-											: '/cart'
-									}
+									to={user.data.role === 'ADMIN' ? '/admin/orders' : '/cart'}
 									className="relative size-10 rounded-xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all duration-200"
 									title="Orders"
 								>
@@ -302,41 +252,6 @@ export function Navbar() {
 											</SheetClose>
 										</div>
 
-										{/* Mobile search */}
-										<div className="px-5 py-4">
-											<form
-												onSubmit={(e) => {
-													handleSearch(e);
-													setMobileOpen(false);
-												}}
-											>
-												<div className="relative">
-													<svg
-														className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															strokeWidth={2}
-															d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-														/>
-													</svg>
-													<Input
-														type="text"
-														placeholder="Search products..."
-														value={searchValue}
-														onChange={(e) =>
-															setSearchValue(e.target.value)
-														}
-														className="pl-10 h-11 bg-zinc-100 border-transparent rounded-xl text-sm focus:bg-white focus:border-zinc-300"
-													/>
-												</div>
-											</form>
-										</div>
-
 										<Separator />
 
 										{/* Mobile nav links */}
@@ -344,9 +259,7 @@ export function Navbar() {
 											{user.data && (
 												<div className="flex items-center gap-3 p-3 mb-4 bg-zinc-50 rounded-xl">
 													<div className="size-10 rounded-xl bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0">
-														{user.data.fullname
-															.charAt(0)
-															.toUpperCase()}
+														{user.data.fullname.charAt(0).toUpperCase()}
 													</div>
 													<div className="min-w-0">
 														<p className="text-sm font-semibold text-zinc-900 truncate">
@@ -415,9 +328,7 @@ export function Navbar() {
 													>
 														<Link
 															to="/login"
-															onClick={() =>
-																setMobileOpen(false)
-															}
+															onClick={() => setMobileOpen(false)}
 														>
 															Login
 														</Link>
@@ -428,9 +339,7 @@ export function Navbar() {
 													>
 														<Link
 															to="/sign-up"
-															onClick={() =>
-																setMobileOpen(false)
-															}
+															onClick={() => setMobileOpen(false)}
 														>
 															Create Account
 														</Link>
