@@ -66,4 +66,21 @@ export const ordersApi = {
 		http
 			.post(`orders/${id}/payment-proof`, { json: { path } })
 			.json<ApiResponse<{ order: Order }>>(),
+
+	/** Get cash flow summary - admin only */
+	getCashFlowSummary: () =>
+		http
+			.get('orders/cash-flow/summary')
+			.json<ApiResponse<{
+				totalRevenue: number;
+				totalOrders: number;
+				avgOrderValue: number;
+				pendingPaymentTotal: number;
+			}>>(),
+
+	/** Get cash flow recent transactions - admin only */
+	getCashFlowTransactions: () =>
+		http
+			.get('orders/cash-flow/transactions')
+			.json<ApiResponse<Order[]>>(),
 };

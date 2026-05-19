@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Banknote, DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
 import {
 	Table,
@@ -9,8 +8,9 @@ import {
 	TableRow,
 } from '~/shared/components/shadcn/ui/table';
 import { Badge } from '~/shared/components/shadcn/ui/badge';
-import { useOrderStore } from '../store/order-store';
 import type { OrderStatus } from '../../checkout/types/checkout-types';
+import { useGetCashFlowSummary } from '../hooks/api/use-get-cash-flow-summary';
+import { useGetCashFlowTransactions } from '../hooks/api/use-get-cash-flow-transactions';
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
 	PENDING_PAYMENT: { label: 'Pending', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
@@ -22,61 +22,38 @@ const statusConfig: Record<OrderStatus, { label: string; className: string }> = 
 };
 
 export default function CashFlow() {
-	const orders = useOrderStore((s) => s.orders);
+	const { data: stats, isLoading: isLoadingSummary } = useGetCashFlowSummary();
+	const { data: recentTransactions, isLoading: isLoadingTransactions } = useGetCashFlowTransactions();
 
-	const stats = useMemo(() => {
-		const completed = orders.filter(
-			(o) => o.status !== 'PENDING_PAYMENT' && o.status !== 'CANCELLED',
-		);
-		const totalRevenue = completed.reduce((sum, o) => sum + o.total, 0);
-		const totalShipping = completed.reduce((sum, o) => sum + o.shippingCost, 0);
-		const avgOrderValue =
-			completed.length > 0 ? totalRevenue / completed.length : 0;
-		const pendingTotal = orders
-			.filter((o) => o.status === 'PENDING_PAYMENT')
-			.reduce((sum, o) => sum + o.total, 0);
-
-		return {
-			totalRevenue,
-			totalShipping,
-			avgOrderValue,
-			pendingTotal,
-			completedCount: completed.length,
-			totalCount: orders.length,
-		};
-	}, [orders]);
+	const statsLoading = isLoadingSummary || !stats;
+	const transactionsLoading = isLoadingTransactions || !recentTransactions;
 
 	const statCards = [
 		{
 			label: 'Total Revenue',
-			value: `Rp ${stats.totalRevenue.toLocaleString('id')}`,
+			value: statsLoading ? 'Loading...' : `Rp ${stats.totalRevenue.toLocaleString('id')}`,
 			icon: DollarSign,
 			color: 'bg-green-50 border-green-200 text-green-800',
 		},
 		{
 			label: 'Total Orders',
-			value: `${stats.completedCount} completed`,
+			value: statsLoading ? 'Loading...' : `${stats.totalOrders} orders`,
 			icon: ShoppingBag,
 			color: 'bg-blue-50 border-blue-200 text-blue-800',
 		},
 		{
 			label: 'Avg Order Value',
-			value: `Rp ${Math.round(stats.avgOrderValue).toLocaleString('id')}`,
+			value: statsLoading ? 'Loading...' : `Rp ${Math.round(stats.avgOrderValue).toLocaleString('id')}`,
 			icon: TrendingUp,
 			color: 'bg-purple-50 border-purple-200 text-purple-800',
 		},
 		{
 			label: 'Pending Payments',
-			value: `Rp ${stats.pendingTotal.toLocaleString('id')}`,
+			value: statsLoading ? 'Loading...' : `Rp ${stats.pendingPaymentTotal.toLocaleString('id')}`,
 			icon: Banknote,
 			color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
 		},
 	];
-
-	const allOrders = [...orders].sort(
-		(a, b) =>
-			new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-	);
 
 	return (
 		<>
@@ -110,30 +87,17 @@ export default function CashFlow() {
 					))}
 				</div>
 
-				{/* Revenue Breakdown */}
-				{stats.totalRevenue > 0 && (
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-						<div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200">
-							<p className="text-sm text-zinc-500">Product Revenue</p>
-							<p className="text-xl font-bold text-zinc-900">
-								Rp {(stats.totalRevenue - stats.totalShipping).toLocaleString('id')}
-							</p>
-						</div>
-						<div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200">
-							<p className="text-sm text-zinc-500">Total Shipping</p>
-							<p className="text-xl font-bold text-zinc-900">
-								Rp {stats.totalShipping.toLocaleString('id')}
-							</p>
-						</div>
-					</div>
-				)}
-
 				{/* Transaction Table */}
 				<h2 className="text-lg font-bold text-zinc-900 mb-4">
-					All Transactions
+					Recent Transactions
 				</h2>
 
-				{allOrders.length === 0 ? (
+				{transactionsLoading ? (
+					<div className="text-center py-16 bg-zinc-50 rounded-xl border-2 border-dashed border-zinc-200 animate-pulse">
+						<Banknote className="size-10 text-zinc-300 mx-auto mb-3" />
+						<p className="text-zinc-500 font-medium">Loading transactions...</p>
+					</div>
+				) : recentTransactions.length === 0 ? (
 					<div className="text-center py-16 bg-zinc-50 rounded-xl border-2 border-dashed border-zinc-200">
 						<Banknote className="size-10 text-zinc-300 mx-auto mb-3" />
 						<p className="text-zinc-500 font-medium">No transactions yet</p>
@@ -155,7 +119,7 @@ export default function CashFlow() {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{allOrders.map((order) => (
+								{recentTransactions.map((order) => (
 									<TableRow key={order.id}>
 										<TableCell className="font-mono text-xs font-medium">
 											{order.orderNumber}
@@ -181,9 +145,9 @@ export default function CashFlow() {
 										<TableCell>
 											<Badge
 												variant="outline"
-												className={statusConfig[order.status].className}
+												className={statusConfig[order.status]?.className || ''}
 											>
-												{statusConfig[order.status].label}
+												{statusConfig[order.status]?.label || order.status}
 											</Badge>
 										</TableCell>
 									</TableRow>
