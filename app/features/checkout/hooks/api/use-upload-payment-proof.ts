@@ -17,7 +17,7 @@ export function useUploadPaymentProof(orderId: string) {
 
 			const { signUrl, path } = urlRes.data;
 
-			// Step 2: Upload file directly to Supabase Storage via presigned URL
+			// Step 2: Upload file directly to S3 via presigned URL
 			const uploadRes = await fetch(signUrl, {
 				method: 'PUT',
 				headers: { 'Content-Type': file.type },
