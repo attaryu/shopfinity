@@ -13,7 +13,6 @@ import type { AdminBrand, BrandFormData } from '../../types/admin-types';
 interface UploadUrlResponse {
 	signUrl: string;
 	path: string;
-	token: string;
 }
 
 export function useCreateBrand() {
@@ -41,8 +40,8 @@ export function useCreateBrand() {
 					.json<ApiResponse<UploadUrlResponse>>();
 
 				if (!urlRes.success || !urlRes.data) throw new Error(transformApiError(urlRes));
-				const { path, token } = urlRes.data;
-				await MediaStorage.uploadToSignedUrl(path, token, file);
+				const { signUrl, path } = urlRes.data;
+				await MediaStorage.uploadToSignedUrl(signUrl, file);
 				logoUrl = path;
 			}
 

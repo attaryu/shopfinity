@@ -13,7 +13,6 @@ import type { AdminProduct, ProductFormData } from '../../types/admin-types';
 interface UploadUrlResponse {
 	signUrl: string;
 	path: string;
-	token: string;
 }
 
 export function useCreateProduct() {
@@ -49,8 +48,8 @@ export function useCreateProduct() {
 					throw new Error(transformApiError(urlRes));
 				}
 
-				const { path, token } = urlRes.data;
-				await MediaStorage.uploadToSignedUrl(path, token, file);
+				const { signUrl, path } = urlRes.data;
+				await MediaStorage.uploadToSignedUrl(signUrl, file);
 				imageUrl = path;
 			}
 

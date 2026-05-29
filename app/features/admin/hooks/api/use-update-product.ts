@@ -37,14 +37,14 @@ export function useUpdateProduct(id: string) {
 					.post('products/upload-url', {
 						json: { fileName: file.name, fileType: file.type },
 					})
-					.json<ApiResponse<{ signUrl: string; path: string; token: string }>>();
+					.json<ApiResponse<{ signUrl: string; path: string }>>();
 
 				if (!urlRes.success || !urlRes.data) {
 					throw new Error(transformApiError(urlRes));
 				}
 
-				const { path, token } = urlRes.data;
-				await MediaStorage.uploadToSignedUrl(path, token, file);
+				const { signUrl, path } = urlRes.data;
+				await MediaStorage.uploadToSignedUrl(signUrl, file);
 				imageUrl = path;
 			}
 
